@@ -1,7 +1,7 @@
 # ae2f_BmpCL
 > This project is not commenced yet.
 
-> It helps building the kernel code version of `ae2f_Bmp`,
+> It helps building the OpenCL kernel code version of `ae2f_Bmp`,
 > so it could be utilised under GPU environment.
 
 # depends on
