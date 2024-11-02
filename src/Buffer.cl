@@ -100,7 +100,7 @@ ae2f_errint_t ae2f_Bmp_cSrc_gDot(
 	#define _max_y __rect[3]
 
 	const uint32_t 
-	xleft = ae2f_Bmp_Idx_XLeft(src->rIdxer), 
+	xleft = ae2f_Bmp_Idx_XLeft(src->rIdxer),
 	yleft = ae2f_Bmp_Idx_YLeft(src->rIdxer);
 
 	if(!(src && retColour && ae2f_Bmp_cSrc_Addr(src, uint8*)))

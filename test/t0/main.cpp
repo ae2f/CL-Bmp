@@ -258,7 +258,6 @@ int main() {
 
     err = clGetPlatformIDs(1, &platform, 0);
     CHECK_ERR();
-
     
     err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &device, 0);
     CHECK_ERR();
