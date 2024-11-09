@@ -32,7 +32,7 @@ if(NOT Bmp_FOUND)
     FetchContent_Declare(
         Bmp
         GIT_REPOSITORY https://github.com/yuisanae2f/ae2f_Bmp.git
-        GIT_TAG "Rel-v2.4.7.2"
+        GIT_TAG "Rel-v2.4.9"
         SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/ae2f/Core
     )
     
