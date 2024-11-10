@@ -28,15 +28,7 @@ include(FetchContent)
 find_package(Bmp)
 if(NOT Bmp_FOUND)
     message("ae2f::Bmp not found")
-
-    FetchContent_Declare(
-        Bmp
-        GIT_REPOSITORY https://github.com/yuisanae2f/ae2f_Bmp.git
-        GIT_TAG "Rel-v2.4.9"
-        SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/ae2f/Core
-    )
-    
-    FetchContent_MakeAvailable(Bmp)
+    add_subdirectory(submodules/Bmp)
     target_link_libraries(${PROJECT_NAME} Bmp)
 else()
     target_link_libraries(${PROJECT_NAME} ae2f::Bmp)
@@ -44,7 +36,6 @@ endif()
 
 find_package(OpenCL REQUIRED)
 target_link_libraries(${PROJECT_NAME} OpenCL::OpenCL)
-
 include_directories(include)
 
 # Header

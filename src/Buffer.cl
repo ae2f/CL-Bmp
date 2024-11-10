@@ -1,3 +1,12 @@
+#define _ae2f_Macro_BitVec_Filled(len, vec_t) ae2f_static_cast(vec_t, (sizeof(vec_t) << 3) == (len) ? ae2f_static_cast(vec_t, -1) : (ae2f_static_cast(vec_t, ae2f_static_cast(vec_t, 1) << (len)) - 1))
+#define ae2f_Macro_BitVec_Filled(len) _ae2f_Macro_BitVec_Filled(len, size_t)
+#define _ae2f_Macro_BitVec_GetRanged(vector, start, end, vec_t) (((vector) >> (start)) & _ae2f_Macro_BitVec_Filled((end) - (start), vec_t))
+#define ae2f_Macro_BitVec_GetRanged(vector, start, end) _ae2f_Macro_BitVec_GetRanged(vector, ae2f_Macro_Cmp_TakeLs(start, end), ae2f_Macro_Cmp_TakeGt(start, end), size_t)
+#define ae2f_Macro_BitVec_Get(vector, idx) ae2f_Macro_BitVec_GetRanged(vector, idx, (idx) + 1)
+#define _ae2f_Macro_BitVec_SetRanged(vector, start, end, val, vec_t) ((vector) & (~((_ae2f_Macro_BitVec_Filled((end) - (start), vec_t)) << start)) | ((val) << start))
+#define ae2f_Macro_BitVec_SetRanged(vector, start, end, val) _ae2f_Macro_BitVec_SetRanged(vector, ae2f_Macro_Cmp_TakeLs(start, end), ae2f_Macro_Cmp_TakeGt(start, end), (val) & ae2f_Macro_BitVec_Filled(ae2f_Macro_Cmp_Diff(start, end)), size_t)
+#define ae2f_Macro_BitVec_Set(vector, idx, val) ae2f_Macro_BitVec_SetRanged(vector, idx, (idx) + 1, val)
+
 #define ae2f_Bmp_Dot_RGBA_GetR(rgb) ae2f_static_cast(uchar, ae2f_Macro_BitVec_GetRanged(ae2f_static_cast(uint, rgb), 0, 8))
 #define ae2f_Bmp_Dot_RGBA_GetG(rgb) ae2f_static_cast(uchar, ae2f_Macro_BitVec_GetRanged(ae2f_static_cast(uint, rgb), 8, 16))
 #define ae2f_Bmp_Dot_RGBA_GetB(rgb) ae2f_static_cast(uchar, ae2f_Macro_BitVec_GetRanged(ae2f_static_cast(uint, rgb), 16, 24))
@@ -233,9 +242,56 @@ ae2f_errint_t ae2f_Bmp_cSrc_gDot(
 	return ae2f_errGlob_OK;
 }
 
-
-
 #undef _min_x
 #undef _min_y
 #undef _max_x
 #undef _max_y
+
+ae2f_errint_t ae2f_Bmp_cSrc_Fill_Partial(
+	ae2f_struct ae2f_Bmp_cSrc* dest,
+	uint32_t colour,
+
+	uint32_t partial_min_x,
+	uint32_t partial_min_y,
+	uint32_t partial_max_x,
+	uint32_t partial_max_y
+) {
+	
+	if(!dest)
+	return ae2f_errGlob_PTR_IS_NULL;
+
+	switch (dest->ElSize) {
+	case ae2f_Bmp_Idxer_eBC_RGB:
+	case ae2f_Bmp_Idxer_eBC_RGBA: break;
+	default: return ae2f_errGlob_IMP_NOT_FOUND;
+	}
+
+	uint32_t width = ae2f_Bmp_Idx_XLeft(dest->rIdxer), height = ae2f_Bmp_Idx_YLeft(dest->rIdxer);
+
+	for(size_t i = partial_min_x; i < width && i < partial_max_x; i++)	
+	for(size_t j = partial_min_y; j < height && j < partial_max_y; j++)
+	for(uint8_t c = 0; c < dest->ElSize; c+=8)
+		ae2f_Bmp_cSrc_Addr(dest, uint8*)[(ae2f_Bmp_Idx_Drive(dest->rIdxer, i, j)) * (dest->ElSize >> 3) + (c >> 3)] = ae2f_Macro_BitVec_GetRanged(colour, c, c+8);
+
+	return ae2f_errGlob_OK;
+}
+
+
+__kernel void Fill(
+	__global ae2f_struct ae2f_Bmp_cSrc* dest,
+	uint32_t colour,
+
+	uint32_t partial_min_x,
+	uint32_t partial_min_y,
+	uint32_t partial_max_x,
+	uint32_t partial_max_y,
+
+	uint32_t segcount
+) {
+	size_t segi = get_global_id(0);
+	uint32_t 
+		width = ae2f_Bmp_Idx_XLeft(dest->rIdxer),
+		height = ae2f_Bmp_Idx_YLeft(dest->rIdxer);
+
+	
+}

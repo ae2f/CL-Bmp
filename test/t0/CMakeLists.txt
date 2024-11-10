@@ -2,7 +2,8 @@ project(ae2f_BmpCL_Test_0)
 
 add_executable(
     ${PROJECT_NAME}
-    "main.cpp"
+    "main.c"
+    "CompileTest.c"
 )
 
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
