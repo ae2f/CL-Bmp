@@ -20,9 +20,9 @@ add_library(
     ${ae2f_PREFIX_LIB}
     "include/ae2f/BmpCL/Buff.h"
     "src/Buff.c"
+    "src/xProgramme.cpp"
+    "src/BmpCL.c"
 )
-
-target_link_libraries(${PROJECT_NAME} m) # library 'math'
 
 include(FetchContent)
 find_package(Bmp)

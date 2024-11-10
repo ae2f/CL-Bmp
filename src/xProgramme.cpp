@@ -1,3 +1,6 @@
+#include <ae2f/BmpCL/Programme.h>
+
+extern "C" ae2f_SHAREDEXPORT const char* const ae2f_BmpCL_Programme = R"(
 #define ae2f_Bmp_Dot_RGBA_GetR(rgb) ae2f_static_cast(uchar, ae2f_Macro_BitVec_GetRanged(ae2f_static_cast(uint, rgb), 0, 8))
 #define ae2f_Bmp_Dot_RGBA_GetG(rgb) ae2f_static_cast(uchar, ae2f_Macro_BitVec_GetRanged(ae2f_static_cast(uint, rgb), 8, 16))
 #define ae2f_Bmp_Dot_RGBA_GetB(rgb) ae2f_static_cast(uchar, ae2f_Macro_BitVec_GetRanged(ae2f_static_cast(uint, rgb), 16, 24))
@@ -233,9 +236,8 @@ ae2f_errint_t ae2f_Bmp_cSrc_gDot(
 	return ae2f_errGlob_OK;
 }
 
-
-
 #undef _min_x
 #undef _min_y
 #undef _max_x
 #undef _max_y
+)";

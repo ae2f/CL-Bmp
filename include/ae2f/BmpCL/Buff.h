@@ -22,3 +22,5 @@ ae2f_extern ae2f_SHAREDCALL ae2f_errint_t ae2f_BmpCL_Buff_Read(
 #define ae2f_BmpCL_Buff_Del clReleaseMemObject
 
 #endif
+
+
