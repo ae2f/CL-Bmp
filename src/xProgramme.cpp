@@ -1,6 +1,13 @@
 #include <ae2f/BmpCL/Programme.h>
 
-extern "C" ae2f_SHAREDEXPORT const char* const ae2f_BmpCL_Programme = R"(
+extern "C" ae2f_SHAREDEXPORT const char* ae2f_BmpCL_Programme[] = { 
+R"(
+#define ae2f_Macro_Cmp_TakeGt(a, b)		((a) > (b) ? (a) : (b))
+#define ae2f_Macro_Cmp_TakeLs(a, b)	((a) < (b) ? (a) : (b))
+#define ae2f_Macro_Cmp_Diff(a, b)			(ae2f_Macro_Cmp_TakeGt(a, b) - ae2f_Macro_Cmp_TakeLs(a, b))
+#define ae2f_Macro_Cmp_TakeMem(ptr, member, alter) ((ptr) ? ((ptr)->member) : (alter))
+#define ae2f_Macro_Cmp_TakeSelf(ptr, alt) ((ptr) ? (ptr) : (alt))
+
 #define _ae2f_Macro_BitVec_Filled(len, vec_t) ae2f_static_cast(vec_t, (sizeof(vec_t) << 3) == (len) ? ae2f_static_cast(vec_t, -1) : (ae2f_static_cast(vec_t, ae2f_static_cast(vec_t, 1) << (len)) - 1))
 #define ae2f_Macro_BitVec_Filled(len) _ae2f_Macro_BitVec_Filled(len, size_t)
 #define _ae2f_Macro_BitVec_GetRanged(vector, start, end, vec_t) (((vector) >> (start)) & _ae2f_Macro_BitVec_Filled((end) - (start), vec_t))
@@ -100,7 +107,7 @@ enum ae2f_Bmp_Idxer_eBC {
 #define ae2f_Bmp_cSrc_Copy_Global_Alpha_ReverseIdxOfX ae2f_static_cast(uint8_t, 	0b01)
 #define ae2f_Bmp_cSrc_Copy_Global_Alpha_ReverseIdxOfY ae2f_static_cast(uint8_t, 	0b10)
 
-ae2f_errint_t ae2f_Bmp_cSrc_gDot(
+ae2f_errint_t _gDot(
 	const ae2f_struct ae2f_Bmp_cSrc* src,
 	uint32_t* retColour,
 	double* __rect,
@@ -245,8 +252,12 @@ ae2f_errint_t ae2f_Bmp_cSrc_gDot(
 	return ae2f_errGlob_OK;
 }
 
+#undef _min_x
+#undef _min_y
+#undef _max_x
+#undef _max_y
 
-ae2f_errint_t ae2f_Bmp_cSrc_Fill_Partial(
+void _Fill_Partial(
 	ae2f_struct ae2f_Bmp_cSrc* dest,
 	uint32_t colour,
 
@@ -255,14 +266,13 @@ ae2f_errint_t ae2f_Bmp_cSrc_Fill_Partial(
 	uint32_t partial_max_x,
 	uint32_t partial_max_y
 ) {
-	
 	if(!dest)
-	return ae2f_errGlob_PTR_IS_NULL;
+	return;
 
 	switch (dest->ElSize) {
 	case ae2f_Bmp_Idxer_eBC_RGB:
 	case ae2f_Bmp_Idxer_eBC_RGBA: break;
-	default: return ae2f_errGlob_IMP_NOT_FOUND;
+	default: return;
 	}
 
 	uint32_t width = ae2f_Bmp_Idx_XLeft(dest->rIdxer), height = ae2f_Bmp_Idx_YLeft(dest->rIdxer);
@@ -272,12 +282,43 @@ ae2f_errint_t ae2f_Bmp_cSrc_Fill_Partial(
 	for(uint8_t c = 0; c < dest->ElSize; c+=8)
 		ae2f_Bmp_cSrc_Addr(dest, uint8*)[(ae2f_Bmp_Idx_Drive(dest->rIdxer, i, j)) * (dest->ElSize >> 3) + (c >> 3)] = ae2f_Macro_BitVec_GetRanged(colour, c, c+8);
 
-	return ae2f_errGlob_OK;
+	return;
 }
 
 
-#undef _min_x
-#undef _min_y
-#undef _max_x
-#undef _max_y
-)";
+__kernel void Fill(
+	__global ae2f_struct ae2f_Bmp_cSrc* dest,
+	uint32_t colour,
+
+	uint32_t partial_min_x,
+	uint32_t partial_min_y,
+	uint32_t partial_max_x,
+	uint32_t partial_max_y,
+
+	uint32_t segcount
+) {
+	size_t segi = get_global_id(0);
+	uint32_t 
+		width = ae2f_Bmp_Idx_XLeft(dest->rIdxer),
+		height = ae2f_Bmp_Idx_YLeft(dest->rIdxer);
+	
+	if(!segcount && segcount == 1) return;
+
+	if(!partial_max_x) partial_max_x = width;
+	if(!partial_max_y) partial_max_y = height;
+
+	if(partial_max_x <= partial_min_x) return;
+	if(partial_max_y <= partial_min_y) return;
+
+	width = partial_max_x - partial_min_x;
+	uint32_t segw = width / (segcount - 1);
+	uint32_t rest = width - (segw * (segcount - 1));
+
+	if(segi + 1 == segcount) 
+	return _Fill_Partial(dest, colour, partial_max_x - rest, partial_min_y, partial_max_x, partial_max_y);
+	else 
+	return _Fill_Partial(dest, colour, partial_min_x + segw * segi, partial_min_y, partial_min_x + segw * segi + segw, partial_max_y);
+}
+)"
+
+};

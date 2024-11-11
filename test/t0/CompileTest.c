@@ -20,7 +20,7 @@ static int Test0() {
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
     program = clCreateProgramWithSource(
-        context, 1, &ae2f_BmpCL_Programme, 0, &err
+        context, ae2f_BmpCL_Programme_COUNT, ae2f_BmpCL_Programme, 0, &err
     );
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
@@ -37,9 +37,38 @@ static int Test0() {
     return 1;
 }
 
+#include <ae2f/BmpCL/BmpCL.h>
+
+static int Test1() {
+    cl_int err = 0;
+    cl_platform_id platform = 0;
+    cl_device_id device = 0;
+    cl_context context = 0;
+    cl_program program = 0;
+
+    err = clGetPlatformIDs(1, &platform, 0);
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+    
+    err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &device, 0);
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+
+    context = clCreateContext(0, 1, &device, 0, 0, &err);
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+
+    err = ae2f_BmpCL_Init(context, 1, &device);
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+
+    err = ae2f_BmpCL_End();
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+
+    __failure:
+    return err;
+}
+
 int CompileTest() {
     int err;
     CHECK_ERR(err = Test0(), 0, ERR);
+    CHECK_ERR(err = Test1(), 0, ERR);
 
     ERR:
     return err;
