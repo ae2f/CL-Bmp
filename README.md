@@ -4,6 +4,9 @@
 > It helps building the OpenCL kernel code version of `ae2f_Bmp`,
 > so it could be utilised under GPU environment.
 
+## Requirements
+> You need `python` to build this project.
+
 # [OpenCL::OpenCL](https://github.com/KhronosGroup/OpenCL-SDK/releases/tag/v2024.05.08)
 - v2024.05.08
 > Helps copying run on GPU.

@@ -9,7 +9,13 @@ ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCL_Init(
     cl_uint clDeviceNumber,
     const cl_device_id* lpDevice
 );
-
 ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCL_End();
+
+ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCL_Fill(
+    cl_mem dest, 
+    cl_command_queue queue,
+    uint32_t colour, 
+    size_t pcount
+);
 
 #endif

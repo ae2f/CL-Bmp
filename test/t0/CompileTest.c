@@ -44,7 +44,6 @@ static int Test1() {
     cl_platform_id platform = 0;
     cl_device_id device = 0;
     cl_context context = 0;
-    cl_program program = 0;
 
     err = clGetPlatformIDs(1, &platform, 0);
     CHECK_ERR(err, CL_SUCCESS, __failure);
@@ -62,6 +61,8 @@ static int Test1() {
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
     __failure:
+    if(context) clReleaseContext(context);
+    if(device) clReleaseDevice(device);
     return err;
 }
 

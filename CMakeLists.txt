@@ -3,6 +3,8 @@ project(BmpCL)
 enable_testing()
 
 option(ae2f_IS_SHARED "Is a shared library or static one." OFF)
+set(ae2f_OpenCL_LIB_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/lib/OpenCL.lib" CACHE STRING "Where library for OpenCL locates.")
+set(ae2f_OpenCL_INCLUDE_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/include/sycl/" CACHE STRING "Where headers for OpenCL headers locate.")
 
 if(ae2f_IS_SHARED)
     set(ae2f_PREFIX_LIB SHARED)
@@ -24,6 +26,8 @@ add_library(
     "src/BmpCL.c"
 )
 
+include_directories(include)
+
 include(FetchContent)
 find_package(Bmp)
 if(NOT Bmp_FOUND)
@@ -34,9 +38,15 @@ else()
     target_link_libraries(${PROJECT_NAME} ae2f::Bmp)
 endif()
 
-find_package(OpenCL REQUIRED)
-target_link_libraries(${PROJECT_NAME} OpenCL::OpenCL)
-include_directories(include)
+find_package(OpenCL)
+if(OpenCL_FOUND)
+    target_link_libraries(${PROJECT_NAME} OpenCL::OpenCL)
+else()
+    message("OpenCL::OpenCL not found.")
+    message("Finding it by two variables...")
+    target_link_libraries(${PROJECT_NAME} ${ae2f_OpenCL_LIB_DIR})
+    include_directories(${ae2f_OpenCL_INCLUDE_DIR})
+endif()
 
 # Header
 target_include_directories(${PROJECT_NAME}
@@ -73,3 +83,6 @@ install(FILES
 )
 
 add_subdirectory(test)
+
+# Threading
+# Pipe (When data is inside the pipe, do not return)

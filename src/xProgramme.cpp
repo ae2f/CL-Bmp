@@ -289,12 +289,6 @@ void _Fill_Partial(
 __kernel void Fill(
 	__global ae2f_struct ae2f_Bmp_cSrc* dest,
 	uint32_t colour,
-
-	uint32_t partial_min_x,
-	uint32_t partial_min_y,
-	uint32_t partial_max_x,
-	uint32_t partial_max_y,
-
 	uint32_t segcount
 ) {
 	size_t segi = get_global_id(0);
@@ -304,8 +298,12 @@ __kernel void Fill(
 	
 	if(!segcount && segcount == 1) return;
 
-	if(!partial_max_x) partial_max_x = width;
-	if(!partial_max_y) partial_max_y = height;
+	uint32_t 
+	partial_min_x = 0,
+	partial_min_y = 0;
+
+	uint32_t partial_max_x = width;
+	uint32_t partial_max_y = height;
 
 	if(partial_max_x <= partial_min_x) return;
 	if(partial_max_y <= partial_min_y) return;

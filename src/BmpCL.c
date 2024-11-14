@@ -1,11 +1,12 @@
 #include <ae2f/BmpCL/BmpCL.h>
 
 static cl_program LIB = 0;
+
+#define ae2f_BmpCL_KernI_FILL 0
+
 static cl_kernel kers[] = {
     0
 };
-
-#define Ker_FILL 0
 
 ae2f_SHAREDEXPORT cl_int ae2f_BmpCL_Init(
     cl_context context,
@@ -20,9 +21,7 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCL_Init(
     if(_err == CL_BUILD_SUCCESS) _err = CL_SUCCESS;
     if(_err != CL_SUCCESS) return _err;
 
-    // printf("Building good\n");
-
-    kers[Ker_FILL] = clCreateKernel(LIB, "Fill", &_err);
+    kers[ae2f_BmpCL_KernI_FILL] = clCreateKernel(LIB, "Fill", &_err);
     if(_err != CL_SUCCESS) return _err;
 
     return _err;
@@ -35,6 +34,29 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCL_End() {
         if(kers[i]) err |= clReleaseKernel(kers[i]);
         kers[i] = 0;
     }
+    
+    return err;
+}
+
+ae2f_SHAREDEXPORT cl_int ae2f_BmpCL_Fill(
+    cl_mem dest, 
+    cl_command_queue queue,
+    uint32_t colour, 
+    size_t pcount
+) {
+    cl_int err = 0;
+
+    err = clSetKernelArg(kers[ae2f_BmpCL_KernI_FILL], 0, sizeof(cl_mem), dest);
+    if(err != CL_SUCCESS) return err;
+    err = clSetKernelArg(kers[ae2f_BmpCL_KernI_FILL], 1, sizeof(uint32_t), &colour);
+    if(err != CL_SUCCESS) return err;
+    err = clSetKernelArg(kers[ae2f_BmpCL_KernI_FILL], 2, sizeof(uint32_t), &pcount);
+    if(err != CL_SUCCESS) return err;
+
+    err = clEnqueueNDRangeKernel(
+        queue, kers[ae2f_BmpCL_KernI_FILL], 
+        1, 0, &pcount, 0, 0, 0, 0
+    );
     
     return err;
 }
