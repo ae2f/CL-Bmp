@@ -2,6 +2,20 @@ cmake_minimum_required(VERSION 3.10)
 project(BmpCL)
 enable_testing()
 
+include_directories(include)
+add_subdirectory(mod/ae2f/Bmp)
+link_libraries(Bmp)
+
+find_package(OpenCL)
+if(OpenCL_FOUND)
+    link_libraries(OpenCL::OpenCL)
+else()
+    message("OpenCL::OpenCL not found.")
+    message("Finding it by two variables...")
+    link_libraries(${ae2f_OpenCL_LIB_DIR})
+    include_directories(${ae2f_OpenCL_INCLUDE_DIR})
+endif()
+
 option(ae2f_IS_SHARED "Is a shared library or static one." OFF)
 set(ae2f_OpenCL_LIB_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/lib/OpenCL.lib" CACHE STRING "Where library for OpenCL locates.")
 set(ae2f_OpenCL_INCLUDE_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/include/sycl/" CACHE STRING "Where headers for OpenCL headers locate.")
@@ -25,28 +39,6 @@ add_library(
     "src/xProgramme.cpp"
     "src/BmpCL.c"
 )
-
-include_directories(include)
-
-include(FetchContent)
-find_package(Bmp)
-if(NOT Bmp_FOUND)
-    message("ae2f::Bmp not found")
-    add_subdirectory(submodules/Bmp)
-    target_link_libraries(${PROJECT_NAME} Bmp)
-else()
-    target_link_libraries(${PROJECT_NAME} ae2f::Bmp)
-endif()
-
-find_package(OpenCL)
-if(OpenCL_FOUND)
-    target_link_libraries(${PROJECT_NAME} OpenCL::OpenCL)
-else()
-    message("OpenCL::OpenCL not found.")
-    message("Finding it by two variables...")
-    target_link_libraries(${PROJECT_NAME} ${ae2f_OpenCL_LIB_DIR})
-    include_directories(${ae2f_OpenCL_INCLUDE_DIR})
-endif()
 
 # Header
 target_include_directories(${PROJECT_NAME}
