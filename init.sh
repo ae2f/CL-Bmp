@@ -1,4 +1,4 @@
 git submodule init && git submodule update
-cd submodules/Bmp
+cd mod/ae2f/Bmp
 sh init.sh
 cd ../../

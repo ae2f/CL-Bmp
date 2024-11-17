@@ -44,7 +44,7 @@ ae2f_SHAREDEXPORT cl_mem ae2f_BmpCL_Buff_Mk(
 
 #include <stdio.h>
 
-ae2f_extern ae2f_errint_t ae2f_BmpCL_Buff_Read(
+ae2f_extern ae2f_err_t ae2f_BmpCL_Buff_Read(
     cl_mem src,
     cl_command_queue queue,
     ae2f_struct ae2f_Bmp_cSrc* dest,

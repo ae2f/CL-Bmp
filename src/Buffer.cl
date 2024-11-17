@@ -36,7 +36,7 @@
 #define ae2f_Bmp_Dot_rRGBA_BlendRGB(rgb, rgba, pfOper) ae2f_Bmp_Dot_RGB_Make(ae2f_Bmp_Dot_rRGBA_Blend_mpRGB(rgba, rgba, R, pfOper), ae2f_Bmp_Dot_rRGBA_Blend_mpRGB(rgba, rgba, G, pfOper), ae2f_Bmp_Dot_rRGBA_Blend_mpRGB(rgba, rgba, B, pfOper))
 #define ae2f_Bmp_Dot_rRGBA_BlendRGBA(rgba1, rgba2, pfOper) ae2f_Bmp_Dot_RGBA_Make(ae2f_Bmp_Dot_rRGBA_Blend_mRGB(rgba1, rgba2, R, pfOper), ae2f_Bmp_Dot_rRGBA_Blend_mRGB(rgba1, rgba2, G, pfOper), ae2f_Bmp_Dot_rRGBA_Blend_mRGB(rgba1, rgba2, B, pfOper), ae2f_Bmp_Dot_rRGBA_BlendA(rgba1, rgba2, pfOper))
 
-typedef uchar ae2f_errint_t, ae2f_Bmp_Idxer_eBC_t, uint8_t;
+typedef uchar ae2f_err_t, ae2f_Bmp_Idxer_eBC_t, uint8_t;
 #define uint32_t uint
 #define ae2f_struct struct
 
@@ -63,32 +63,32 @@ struct ae2f_Bmp_cSrc {
 #define ae2f_Bmp_Idx_Cut(rIdxer, mX, MX, mY, MY) (((ae2f_Bmp_Idx_Drive(rIdxer, mX, mY) == -1 || ae2f_Bmp_Idx_Drive(rIdxer, MX, MY)) == -1) ? ae2f_record_make(ae2f_struct ae2f_Bmp_rIdxer, 0, 0, 0, 0) : ae2f_record_make(ae2f_struct ae2f_Bmp_rIdxer, (rIdxer).Width, ae2f_Bmp_Idx_Drive(rIdxer, MX, MY), (rIdxer).CurrX + mX, (rIdxer).CurrX + MX))
 
 // The Operation you've wanted has beed succeed. 
-#define ae2f_errGlob_OK ae2f_static_cast(ae2f_errint_t, 0)
+#define ae2f_errGlob_OK ae2f_static_cast(ae2f_err_t, 0)
 
 // Failed to find the function on preprocessor which is callable for some reason
 // No operation has beed done.
-#define ae2f_errGlob_IMP_NOT_FOUND ae2f_static_cast(ae2f_errint_t, 0b1)
+#define ae2f_errGlob_IMP_NOT_FOUND ae2f_static_cast(ae2f_err_t, 0b1)
 
 // Failed to refer the pointer either l-value inside the function.
-#define ae2f_errGlob_PTR_IS_NULL ae2f_static_cast(ae2f_errint_t, 0b10)
+#define ae2f_errGlob_PTR_IS_NULL ae2f_static_cast(ae2f_err_t, 0b10)
 
 // Failed freeing the memory.
-#define ae2f_errGlob_FLUSH_FAILED ae2f_static_cast(ae2f_errint_t, 0b100)
+#define ae2f_errGlob_FLUSH_FAILED ae2f_static_cast(ae2f_err_t, 0b100)
 
 // stdlib allocating functions (malloc, calloc, realloc) has been failed.
-#define ae2f_errGlob_ALLOC_FAILED ae2f_static_cast(ae2f_errint_t, 0b1000)
+#define ae2f_errGlob_ALLOC_FAILED ae2f_static_cast(ae2f_err_t, 0b1000)
 
 // Found that parameter sent by programmer is invalid.
 // The operation may have been ceased while the middle.
-#define ae2f_errGlob_WRONG_OPERATION ae2f_static_cast(ae2f_errint_t, 0b10000)
+#define ae2f_errGlob_WRONG_OPERATION ae2f_static_cast(ae2f_err_t, 0b10000)
 
 // Found some errors, but not by parameters.
 // The operation has failed.
-#define ae2f_errGlob_NFOUND ae2f_static_cast(ae2f_errint_t, 0b100000)
+#define ae2f_errGlob_NFOUND ae2f_static_cast(ae2f_err_t, 0b100000)
 
 // The operation went done.
 // Note that operation may not be valid.
-#define ae2f_errGlob_DONE_HOWEV ae2f_static_cast(ae2f_errint_t, 0b1000000)
+#define ae2f_errGlob_DONE_HOWEV ae2f_static_cast(ae2f_err_t, 0b1000000)
 
 // Enum about Bit Count per Pixel
 enum ae2f_Bmp_Idxer_eBC {
@@ -103,7 +103,7 @@ enum ae2f_Bmp_Idxer_eBC {
 #define ae2f_Bmp_cSrc_Copy_Global_Alpha_ReverseIdxOfX ae2f_static_cast(uint8_t, 	0b01)
 #define ae2f_Bmp_cSrc_Copy_Global_Alpha_ReverseIdxOfY ae2f_static_cast(uint8_t, 	0b10)
 
-ae2f_errint_t _gDot(
+ae2f_err_t _gDot(
 	const ae2f_struct ae2f_Bmp_cSrc* src,
 	uint32_t* retColour,
 	double* __rect,

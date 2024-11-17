@@ -1,4 +1,5 @@
-project(ae2f_BmpCL_Test_0)
+link_libraries(BmpCL)
+project(BmpCLTest)
 
 add_executable(
     ${PROJECT_NAME}
