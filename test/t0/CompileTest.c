@@ -67,7 +67,7 @@ static int Test1() {
 }
 
 int CompileTest() {
-    int err;
+    int err = 0;
     CHECK_ERR(err = Test0(), 0, ERR);
     CHECK_ERR(err = Test1(), 0, ERR);
 
