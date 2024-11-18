@@ -4,3 +4,6 @@
 [submodule "mod/ae2f/Bmp"]
 	path = mod/ae2f/Bmp
 	url = https://github.com/ae2f/Bmp
+[submodule "mod/ae2f/PreP"]
+	path = mod/ae2f/PreP
+	url = https://github.com/ae2f/PreP
