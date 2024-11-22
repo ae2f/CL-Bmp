@@ -12,7 +12,7 @@ static int Test0() {
     cl_mem clsrc = 0;
     cl_command_queue queue = 0;
 
-    ae2f_struct ae2f_Bmp_cSrc 
+    ae2f_struct ae2f_cBmpSrc 
     src = {
         .ElSize = 24,
         .rIdxer = {
@@ -50,7 +50,7 @@ static int Test0() {
     err = ae2f_BmpCL_Init(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    CHECK_ERR(err = ae2f_Bmp_cSrc_Fill(&src, 0x50), CL_SUCCESS, __failure);
+    CHECK_ERR(err = ae2f_cBmpSrc_Fill(&src, 0x50), CL_SUCCESS, __failure);
 
     clsrc = ae2f_BmpCL_Buff_Mk(
         CL_MEM_READ_WRITE, &src, context, queue, &err
@@ -82,7 +82,7 @@ static int Test1() {
     cl_mem clsrc = 0, cldest = 0;
     cl_command_queue queue = 0;
 
-    ae2f_struct ae2f_Bmp_cSrc 
+    ae2f_struct ae2f_cBmpSrc 
     src = {
         .ElSize = 24,
         .rIdxer = {
@@ -120,7 +120,7 @@ static int Test1() {
     err = ae2f_BmpCL_Init(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    CHECK_ERR(err = ae2f_Bmp_cSrc_Fill(&src, 0x50), CL_SUCCESS, __failure);
+    CHECK_ERR(err = ae2f_cBmpSrc_Fill(&src, 0x50), CL_SUCCESS, __failure);
 
     clsrc = ae2f_BmpCL_Buff_Mk(
         CL_MEM_READ_WRITE, &src, context, queue, &err

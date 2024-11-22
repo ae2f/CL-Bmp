@@ -2,7 +2,7 @@
 
 ae2f_SHAREDEXPORT cl_mem ae2f_BmpCL_Buff_Mk(
     cl_mem_flags flag,
-    const ae2f_struct ae2f_Bmp_cSrc* src,
+    const ae2f_struct ae2f_cBmpSrc* src,
     cl_context ctx,
     cl_command_queue queue,
     cl_int* reterr
@@ -11,7 +11,7 @@ ae2f_SHAREDEXPORT cl_mem ae2f_BmpCL_Buff_Mk(
     cl_int err = CL_SUCCESS;
 
     const size_t 
-    szhead = sizeof(ae2f_struct ae2f_Bmp_cSrc) - sizeof(uint8_t*),
+    szhead = sizeof(ae2f_struct ae2f_cBmpSrc) - sizeof(uint8_t*),
     szbody = (src->ElSize >> 3) * (src->rIdxer.Count);
 
     cl_mem buff = 0;
@@ -47,17 +47,17 @@ ae2f_SHAREDEXPORT cl_mem ae2f_BmpCL_Buff_Mk(
 ae2f_extern ae2f_err_t ae2f_BmpCL_Buff_Read(
     cl_mem src,
     cl_command_queue queue,
-    ae2f_struct ae2f_Bmp_cSrc* dest,
-    ae2f_struct ae2f_Bmp_cSrc* dest_require
+    ae2f_struct ae2f_cBmpSrc* dest,
+    ae2f_struct ae2f_cBmpSrc* dest_require
 ) {
     cl_int err = CL_SUCCESS;
-    ae2f_struct ae2f_Bmp_cSrc head[1];
+    ae2f_struct ae2f_cBmpSrc head[1];
     head->Addr = 0;
 
     if(!(src && dest)) return ae2f_errGlob_PTR_IS_NULL;
 
     const size_t 
-    szhead = sizeof(ae2f_struct ae2f_Bmp_cSrc) - sizeof(uint8_t*);
+    szhead = sizeof(ae2f_struct ae2f_cBmpSrc) - sizeof(uint8_t*);
 
     switch (err = clEnqueueReadBuffer(
         queue, src, CL_TRUE,

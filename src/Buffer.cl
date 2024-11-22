@@ -48,12 +48,12 @@ struct ae2f_Bmp_rIdxer {
 #define ae2f_static_cast(t, v) ((t)(v))
 #define ae2f_record_make(type, ...) ((type) { __VA_ARGS__ })
 
-struct ae2f_Bmp_cSrc {
+struct ae2f_cBmpSrc {
 	struct ae2f_Bmp_rIdxer rIdxer;
 	ae2f_Bmp_Idxer_eBC_t ElSize;
 };
 
-#define ae2f_Bmp_cSrc_Addr(src, type) ae2f_static_cast(type, (src + 1))
+#define ae2f_cBmpSrc_Addr(src, type) ae2f_static_cast(type, (src + 1))
 
 #define ae2f_Bmp_Idx_XLeft(rIdxer) ((rIdxer).IdxXJump - (rIdxer).CurrX)
 #define ae2f_Bmp_Idx_YLeft(rIdxer) ((rIdxer).Count / (rIdxer).Width)
@@ -100,11 +100,11 @@ enum ae2f_Bmp_Idxer_eBC {
 	ae2f_Bmp_Idxer_eBC_REMINDER_OWNER = 64
 };
 
-#define ae2f_Bmp_cSrc_Copy_Global_Alpha_ReverseIdxOfX ae2f_static_cast(uint8_t, 	0b01)
-#define ae2f_Bmp_cSrc_Copy_Global_Alpha_ReverseIdxOfY ae2f_static_cast(uint8_t, 	0b10)
+#define ae2f_cBmpSrc_Copy_Global_Alpha_ReverseIdxOfX ae2f_static_cast(uint8_t, 	0b01)
+#define ae2f_cBmpSrc_Copy_Global_Alpha_ReverseIdxOfY ae2f_static_cast(uint8_t, 	0b10)
 
 ae2f_err_t _gDot(
-	const ae2f_struct ae2f_Bmp_cSrc* src,
+	const ae2f_struct ae2f_cBmpSrc* src,
 	uint32_t* retColour,
 	double* __rect,
 	uint8_t reverseIdx
@@ -118,7 +118,7 @@ ae2f_err_t _gDot(
 	xleft = ae2f_Bmp_Idx_XLeft(src->rIdxer),
 	yleft = ae2f_Bmp_Idx_YLeft(src->rIdxer);
 
-	if(!(src && retColour && ae2f_Bmp_cSrc_Addr(src, uint8*)))
+	if(!(src && retColour && ae2f_cBmpSrc_Addr(src, uint8*)))
 	return ae2f_errGlob_PTR_IS_NULL;
 
 	struct {
@@ -167,7 +167,7 @@ ae2f_err_t _gDot(
 	Corner.minx = (size_t)_min_x;
 	Corner.miny = (size_t)_min_y;
 
-	if(reverseIdx & ae2f_Bmp_cSrc_Copy_Global_Alpha_ReverseIdxOfX) {
+	if(reverseIdx & ae2f_cBmpSrc_Copy_Global_Alpha_ReverseIdxOfX) {
 		Corner.minx = xleft - Corner.minx;
 		Corner.maxx = xleft - Corner.maxx;
 
@@ -179,7 +179,7 @@ ae2f_err_t _gDot(
 		Corner.maxx ^= Corner.minx; 
 	}
 
-	if(reverseIdx & ae2f_Bmp_cSrc_Copy_Global_Alpha_ReverseIdxOfY) {
+	if(reverseIdx & ae2f_cBmpSrc_Copy_Global_Alpha_ReverseIdxOfY) {
 		Corner.miny = yleft - Corner.miny;
 		Corner.maxy = yleft - Corner.maxy;
 
@@ -200,11 +200,11 @@ ae2f_err_t _gDot(
 	#pragma region Centre
 	for(size_t i = Corner.minx; i < Corner.maxx; i++)
 	for(size_t j = Corner.miny; j < Corner.maxy; j++) {
-		const uint8_t* const __src = ae2f_Bmp_cSrc_Addr(src, const uint8_t*) + ae2f_Bmp_Idx_Drive(src->rIdxer, i, j) * (src->ElSize >> 3);
+		const uint8_t* const __src = ae2f_cBmpSrc_Addr(src, const uint8_t*) + ae2f_Bmp_Idx_Drive(src->rIdxer, i, j) * (src->ElSize >> 3);
 
 		// invalid index check
 		// index validation
-		if(__src + 1 == ae2f_Bmp_cSrc_Addr(src, const uint8_t*)) continue;
+		if(__src + 1 == ae2f_cBmpSrc_Addr(src, const uint8_t*)) continue;
 
 		switch(src->ElSize) {
 			case ae2f_Bmp_Idxer_eBC_RGB: {
@@ -254,7 +254,7 @@ ae2f_err_t _gDot(
 #undef _max_y
 
 void _Fill_Partial(
-	ae2f_struct ae2f_Bmp_cSrc* dest,
+	ae2f_struct ae2f_cBmpSrc* dest,
 	uint32_t colour,
 
 	uint32_t partial_min_x,
@@ -276,14 +276,14 @@ void _Fill_Partial(
 	for(size_t i = partial_min_x; i < width && i < partial_max_x; i++)	
 	for(size_t j = partial_min_y; j < height && j < partial_max_y; j++)
 	for(uint8_t c = 0; c < dest->ElSize; c+=8)
-		ae2f_Bmp_cSrc_Addr(dest, uint8*)[(ae2f_Bmp_Idx_Drive(dest->rIdxer, i, j)) * (dest->ElSize >> 3) + (c >> 3)] = ae2f_Macro_BitVec_GetRanged(colour, c, c+8);
+		ae2f_cBmpSrc_Addr(dest, uint8*)[(ae2f_Bmp_Idx_Drive(dest->rIdxer, i, j)) * (dest->ElSize >> 3) + (c >> 3)] = ae2f_Macro_BitVec_GetRanged(colour, c, c+8);
 
 	return;
 }
 
 
 __kernel void Fill(
-	__global ae2f_struct ae2f_Bmp_cSrc* dest,
+	__global ae2f_struct ae2f_cBmpSrc* dest,
 	uint32_t colour,
 	uint32_t segcount
 ) {
