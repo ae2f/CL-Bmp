@@ -47,9 +47,10 @@ static int Test0() {
     queue = clCreateCommandQueueWithProperties(context, device, 0, &err);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2f_BmpCL_Init(context, 1, &device);
+    err = ae2f_BmpCLMk(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
+    // Buffers getting SegFault and I don't know why
     CHECK_ERR(err = ae2f_cBmpSrcFill(&src, 0x50), CL_SUCCESS, __failure);
 
     clsrc = ae2f_cBmpCLBuffMk(
@@ -60,7 +61,7 @@ static int Test0() {
     CHECK_ERR(err = ae2f_cBmpCLBuffGets(clsrc, queue, &dest, 0), CL_SUCCESS, fail_after_init);
 
     fail_after_init:
-    ae2f_BmpCL_End();
+    ae2f_BmpCLDel();
     if(clsrc) ae2f_cBmpCLBuffDel(clsrc);
 
     __failure:
@@ -117,7 +118,7 @@ static int Test1() {
     queue = clCreateCommandQueueWithProperties(context, device, 0, &err);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2f_BmpCL_Init(context, 1, &device);
+    err = ae2f_BmpCLMk(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
     CHECK_ERR(err = ae2f_cBmpSrcFill(&src, 0x50), CL_SUCCESS, __failure);
@@ -132,14 +133,14 @@ static int Test1() {
     );
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
     CHECK_ERR(
-        err = ae2f_BmpCL_Fill(cldest, queue, 0x50, 2), 
+        err = ae2f_BmpCLFill(cldest, queue, 0x50, 2), 
         CL_SUCCESS, fail_after_init
     );
 
     
 
     fail_after_init:
-    ae2f_BmpCL_End();
+    ae2f_BmpCLDel();
     if(clsrc) ae2f_cBmpCLBuffDel(clsrc);
     if(cldest) ae2f_cBmpCLBuffDel(cldest);
 

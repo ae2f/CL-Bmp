@@ -54,10 +54,10 @@ static int Test1() {
     context = clCreateContext(0, 1, &device, 0, 0, &err);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2f_BmpCL_Init(context, 1, &device);
+    err = ae2f_BmpCLMk(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2f_BmpCL_End();
+    err = ae2f_BmpCLDel();
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
     __failure:

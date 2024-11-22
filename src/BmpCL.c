@@ -8,7 +8,7 @@ static cl_kernel kers[] = {
     0
 };
 
-ae2f_SHAREDEXPORT cl_int ae2f_BmpCL_Init(
+ae2f_SHAREDEXPORT cl_int ae2f_BmpCLMk(
     cl_context context,
     cl_uint clDeviceNumber,
     const cl_device_id* lpDevice
@@ -27,7 +27,7 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCL_Init(
     return _err;
 }
 
-ae2f_SHAREDEXPORT cl_int ae2f_BmpCL_End() {
+ae2f_SHAREDEXPORT cl_int ae2f_BmpCLDel() {
     cl_int err = CL_SUCCESS;
     if(LIB) err |= clReleaseProgram(LIB); LIB = 0;
     for(size_t i = 0; i < sizeof(kers) / sizeof(cl_kernel); i++) {
@@ -38,7 +38,7 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCL_End() {
     return err;
 }
 
-ae2f_SHAREDEXPORT cl_int ae2f_BmpCL_Fill(
+ae2f_SHAREDEXPORT cl_int ae2f_BmpCLFill(
     cl_mem dest, 
     cl_command_queue queue,
     uint32_t colour, 
