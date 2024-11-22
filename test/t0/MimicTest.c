@@ -50,18 +50,18 @@ static int Test0() {
     err = ae2f_BmpCL_Init(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    CHECK_ERR(err = ae2f_cBmpSrc_Fill(&src, 0x50), CL_SUCCESS, __failure);
+    CHECK_ERR(err = ae2f_cBmpSrcFill(&src, 0x50), CL_SUCCESS, __failure);
 
-    clsrc = ae2f_BmpCL_Buff_Mk(
+    clsrc = ae2f_cBmpCLBuffMk(
         CL_MEM_READ_WRITE, &src, context, queue, &err
     );
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
 
-    CHECK_ERR(err = ae2f_BmpCL_Buff_Read(clsrc, queue, &dest, 0), CL_SUCCESS, fail_after_init);
+    CHECK_ERR(err = ae2f_cBmpCLBuffGets(clsrc, queue, &dest, 0), CL_SUCCESS, fail_after_init);
 
     fail_after_init:
     ae2f_BmpCL_End();
-    if(clsrc) ae2f_BmpCL_Buff_Del(clsrc);
+    if(clsrc) ae2f_cBmpCLBuffDel(clsrc);
 
     __failure:
     if(src.Addr) free(src.Addr);
@@ -120,14 +120,14 @@ static int Test1() {
     err = ae2f_BmpCL_Init(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    CHECK_ERR(err = ae2f_cBmpSrc_Fill(&src, 0x50), CL_SUCCESS, __failure);
+    CHECK_ERR(err = ae2f_cBmpSrcFill(&src, 0x50), CL_SUCCESS, __failure);
 
-    clsrc = ae2f_BmpCL_Buff_Mk(
+    clsrc = ae2f_cBmpCLBuffMk(
         CL_MEM_READ_WRITE, &src, context, queue, &err
     );
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
 
-    cldest = ae2f_BmpCL_Buff_Mk(
+    cldest = ae2f_cBmpCLBuffMk(
         CL_MEM_READ_WRITE, &src, context, queue, &err
     );
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
@@ -140,8 +140,8 @@ static int Test1() {
 
     fail_after_init:
     ae2f_BmpCL_End();
-    if(clsrc) ae2f_BmpCL_Buff_Del(clsrc);
-    if(cldest) ae2f_BmpCL_Buff_Del(cldest);
+    if(clsrc) ae2f_cBmpCLBuffDel(clsrc);
+    if(cldest) ae2f_cBmpCLBuffDel(cldest);
 
     __failure:
     if(src.Addr) free(src.Addr);

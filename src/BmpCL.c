@@ -21,8 +21,8 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCL_Init(
     if(_err == CL_BUILD_SUCCESS) _err = CL_SUCCESS;
     if(_err != CL_SUCCESS) return _err;
 
-    kers[ae2f_BmpCL_KernI_FILL] = clCreateKernel(LIB, "Fill", &_err);
-    if(_err != CL_SUCCESS) return _err;
+    // kers[ae2f_BmpCL_KernI_FILL] = clCreateKernel(LIB, "Fill", &_err);
+    // if(_err != CL_SUCCESS) return _err;
 
     return _err;
 }

@@ -2,12 +2,13 @@
 
 extern "C" ae2f_SHAREDEXPORT const char* ae2f_BmpCL_Programme[] = { 
 R"(
+typedef uint uint32_t;
+typedef ushort uint16_t;
+typedef uchar uint8_t;
+typedef int int32_t;
 
-    typedef uint uint32_t;
-    typedef ushort uint16_t;
-    typedef uchar uint8_t;
-    typedef int int32_t;
-    #if !defined(ae2f_Bmp_Src_h)
+#define global m_global
+#if !defined(ae2f_Bmp_Src_h)
 #define ae2f_Bmp_Src_h
 
 #if !defined(ae2f_Bmp_Idxer_h)
@@ -2262,7 +2263,7 @@ ae2f_SHAREDEXPORT ae2f_err_t ae2f_cBmpSrcCpy(
 	const ae2f_struct ae2f_cBmpSrc* src,
 	const struct ae2f_cBmpSrcCpyPrm* _srcprm
 ) {
-#define srcprm ae2f_union_cast(const ae2f_struct ae2f_cBmpSrcCpyPrm*, const ae2f_struct ae2f_cBmpSrcCpyPrmDef_i1*, _srcprm)
+#define srcprm ae2f_static_cast(const ae2f_cBmpSrcCpyPrmDef_i1*, _srcprm)
 	ae2f_err_t code;
 
 	if (!(src && dest && srcprm && src->Addr && dest->Addr)) {
@@ -2488,7 +2489,7 @@ ae2f_SHAREDEXPORT ae2f_err_t ae2f_cBmpSrcCpyPartial(
 
 	__breakloopforx:;
 	}
-	return ae2f_errGlob_OK;
+	return ae2f_errGlob_OK;  
 }
 )"
 
