@@ -20,7 +20,7 @@ static int Test0() {
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
     program = clCreateProgramWithSource(
-        context, ae2f_BmpCL_Programme_COUNT, ae2f_BmpCL_Programme, 0, &err
+        context, 1, &ae2f_BmpCL_Programme, 0, &err
     );
     CHECK_ERR(err, CL_SUCCESS, __failure);
 

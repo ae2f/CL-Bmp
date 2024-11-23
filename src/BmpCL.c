@@ -15,7 +15,7 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLMk(
 ) {
     cl_int _err = CL_SUCCESS;
 
-    LIB = clCreateProgramWithSource(context, ae2f_BmpCL_Programme_COUNT, ae2f_BmpCL_Programme, 0, &_err);
+    LIB = clCreateProgramWithSource(context, 1, &ae2f_BmpCL_Programme, 0, &_err);
     if(_err != CL_SUCCESS) return _err;
     _err = clBuildProgram(LIB, clDeviceNumber, lpDevice, 0, 0, 0);
     if(_err == CL_BUILD_SUCCESS) _err = CL_SUCCESS;
