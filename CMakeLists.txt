@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(BmpCL)
+project(BmpCL VERSION 1.3.2)
 enable_testing()
 if(NOT TARGET ${PROJECT_NAME})
 option(ae2f_IS_SHARED "Is a shared library or static one." OFF)

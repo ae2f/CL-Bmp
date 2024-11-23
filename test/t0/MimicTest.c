@@ -49,8 +49,6 @@ static int Test0() {
 
     err = ae2f_BmpCLMk(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
-
-    // Buffers getting SegFault and I don't know why
     CHECK_ERR(err = ae2f_cBmpSrcFill(&src, 0x50), CL_SUCCESS, __failure);
 
     clsrc = ae2f_cBmpCLBuffMk(
@@ -58,6 +56,7 @@ static int Test0() {
     );
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
 
+    // Buffers getting SegFault and I don't know why
     CHECK_ERR(err = ae2f_cBmpCLBuffGets(clsrc, queue, &dest, 0), CL_SUCCESS, fail_after_init);
 
     fail_after_init:

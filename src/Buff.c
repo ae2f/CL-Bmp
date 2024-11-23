@@ -12,7 +12,7 @@ ae2f_SHAREDEXPORT cl_mem ae2f_cBmpCLBuffMk(
 
     const size_t 
     szhead = sizeof(ae2f_struct ae2f_cBmpSrc) - sizeof(uint8_t*),
-    szbody = (src->ElSize >> 3) * (src->rIdxer.Count);
+    szbody = ((src->ElSize) * (src->rIdxer.Count)) >> 3;
 
     cl_mem buff = 0;
 
@@ -90,7 +90,7 @@ ae2f_extern ae2f_err_t ae2f_cBmpCLBuffGets(
 
     switch (err = clEnqueueReadBuffer(
         queue, src, CL_TRUE,
-        szhead, szbody, dest, 0, 0, 0
+        szhead, szbody, dest->Addr, 0, 0, 0
     )) {
         case CL_SUCCESS: break;
         default: return ae2f_errGlob_NFOUND;

@@ -2485,6 +2485,6 @@ ae2f_SHAREDEXPORT ae2f_err_t ae2f_cBmpSrcCpyPartial(
 
 	__breakloopforx:;
 	}
-	return ae2f_errGlob_OK;  
+	return ae2f_errGlob_OK;
 }
 

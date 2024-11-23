@@ -17,8 +17,8 @@ with open('./mod/ae2f/Bmp/src/Src/Double.c', 'r') as F:
 src_ret = mod.ae2f.PreP.PreP.Include(
     paramsrc,
     f"{HERE}/mod/ae2f/Bmp/src/Src",
-    paraminclude
-)
+    paraminclude 
+) 
 
 with open('./src/a.cl', 'w') as F:
     pre = """typedef uint uint32_t;
