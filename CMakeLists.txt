@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(BmpCL VERSION 1.3.2)
 enable_testing()
 if(NOT TARGET ${PROJECT_NAME})
+
 option(ae2f_IS_SHARED "Is a shared library or static one." OFF)
 set(ae2f_OpenCL_LIB_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/lib/OpenCL.lib" CACHE STRING "Where library for OpenCL locates.")
 set(ae2f_OpenCL_INCLUDE_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/include/sycl/" CACHE STRING "Where headers for OpenCL headers locate.")
@@ -21,17 +22,17 @@ endif()
 
 # Namespace Package
 include(GNUInstallDirs)
-    add_library(
-        ${PROJECT_NAME}
-        ${ae2f_PREFIX_LIB}
-        "include/ae2f/BmpCL/Buff.h"
-        "src/Buff.c"
-        "src/xProgramme.cpp"
-        "src/BmpCL.c"
-    )
+add_library(
+    ${PROJECT_NAME}
+    ${ae2f_PREFIX_LIB}
+    "include/ae2f/BmpCL/Buff.h"
+    "src/Buff.c"
+    "src/xProgramme.cpp"
+    "src/BmpCL.c"
+)
 
-    include_directories(include)
-    add_subdirectory(test)
+include_directories(include)
+add_subdirectory(test)
 
 
 # Header
