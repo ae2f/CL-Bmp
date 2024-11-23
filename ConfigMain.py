@@ -27,5 +27,6 @@ typedef uchar uint8_t;
 typedef int int32_t;
 
 #define global m_global
+#define ae2f_ptrBmpSrcUInt8 __global uint8_t*
 """ + src_ret
     F.writelines(pre)
