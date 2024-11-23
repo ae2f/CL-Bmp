@@ -1,6 +1,6 @@
 #include <ae2f/BmpCL/Programme.h>
 
-extern "C" ae2f_SHAREDEXPORT const char* ae2f_BmpCL_Programme[] = { 
+extern "C" ae2f_SHAREDEXPORT const char* ae2f_BmpCL_Programme[] = {
 R"(
 typedef uint uint32_t;
 typedef ushort uint16_t;
@@ -8,6 +8,8 @@ typedef uchar uint8_t;
 typedef int int32_t;
 
 #define global m_global
+#define ae2f_ptrBmpSrcUInt8 __global uint8_t*
+#define ae2f_Cmp_Fun_h
 #if !defined(ae2f_Bmp_Src_h)
 #define ae2f_Bmp_Src_h
 
@@ -66,21 +68,54 @@ typedef uint8_t ae2f_err_t;
 #if !defined(ae2f_Cmp_h)
 #define ae2f_Cmp_h
 
+#ifndef ae2f_Cmp_Fun_h
+#define ae2f_Cmp_Fun_h
+
+/// @brief 
+/// A predefined returning data type for @ref ae2f_fpCmp_t.
+/// @see ae2f_CmpFunRet_EQUAL
+/// @see ae2f_CmpFunRet_RISLESSER
+/// @see ae2f_CmpFunRet_LISLESSER
+typedef int ae2f_CmpFunRet_t;
+
+/// @brief
+/// It is an api for following approximate pseudo code.
+/// ```c
+/// *l - *r
+/// ```
+/// @see ae2f_CmpFunRet_t
+typedef ae2f_CmpFunRet_t(*ae2f_fpCmp_t)(const void* l, const void* r);
+
+/// @brief they are same
+/// @see ae2f_CmpFunRet_t 
+#define ae2f_CmpFunRet_EQUAL		0
+
+/// @brief right is lesser
+/// @see ae2f_CmpFunRet_t
+#define ae2f_CmpFunRet_RISLESSER	1
+
+/// @brief left is lesser
+/// @see ae2f_CmpFunRet_t
+#define ae2f_CmpFunRet_LISLESSER	-1
+
+#endif
+
+
 /// @warning
 /// Two parameters must be comparable with operator.
 /// @return
 /// One bigger.
-#define ae2f_Cmp_TakeGt(a, b)		((a) > (b) ? (a) : (b))
+#define ae2f_CmpGetGt(a, b)		((a) > (b) ? (a) : (b))
 
 /// @warning
 /// Two parameters must be comparable with operator.
 /// @return
 /// One smaller.
-#define ae2f_Cmp_TakeLs(a, b)	((a) < (b) ? (a) : (b))
+#define ae2f_CmpGetLs(a, b)	((a) < (b) ? (a) : (b))
 
 /// @return
 /// The absolute different of two.
-#define ae2f_Cmp_Diff(a, b)			(ae2f_Cmp_TakeGt(a, b) - ae2f_Cmp_TakeLs(a, b))
+#define ae2f_CmpDiff(a, b)			(ae2f_CmpGetGt(a, b) - ae2f_CmpGetLs(a, b))
 
 /// @brief
 /// Gets the member from the pointer.
@@ -88,30 +123,30 @@ typedef uint8_t ae2f_err_t;
 /// @param ptr The pointer for getting member.
 /// @param member The valid member's name. [from the structure]
 /// @param alter The alternative value when given nullptr.
-#define ae2f_Cmp_TakeMem(ptr, member, alter) ((ptr) ? ((ptr)->member) : (alter))
+#define ae2f_CmpGetMem(ptr, member, alter) ((ptr) ? ((ptr)->member) : (alter))
 
 /// @brief
 /// Returns ptr's self.
 /// Given nullptr, the return will be alt.
 /// @param ptr Self Referring
 /// @param alt The alternative value.
-#define ae2f_Cmp_TakeSelf(ptr, alt) ((ptr) ? (ptr) : (alt))
+#define ae2f_CmpGetSelf(ptr, alt) ((ptr) ? (ptr) : (alt))
 #endif // !defined(ae2f_Macro_Compare_h)
 
-#if !defined(ae2f_Macro_Cast_h)
+#if !defined(ae2f_Cast_h)
 
 /// @brief
 /// asdf
-#define ae2f_Macro_Cast_h
+#define ae2f_Cast_h
 
 /// @brief
 /// ANSI Code for clearing the console.
 /// Clearing all display, moving the cursor on the top.
-#define ae2f_Cast_CCls "\033[2J\033[H"
+#define ae2f_CastCCls "\033[2J\033[H"
 
 /// @brief
 /// simply merge all text inside the round bracket, counting them as a single text block.
-#define ae2f_Cast_Merge(...) __VA_ARGS__
+#define ae2f_CastMerge(...) __VA_ARGS__
 
 
 #if defined(__cplusplus)
@@ -126,7 +161,7 @@ typedef uint8_t ae2f_err_t;
 /// @see
 /// @ref ae2f_union_cast
 template<typename t, typename k>
-union ae2f_union_caster {
+union ae2f_UnionCaster {
 	t a;
 	k b;
 };
@@ -136,43 +171,43 @@ union ae2f_union_caster {
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...) __VA_ARGS__
+#define ae2f_WhenCXX(...) __VA_ARGS__
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...)
+#define ae2f_WhenC(...)
 
 #else
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...)
+#define ae2f_WhenCXX(...)
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...) __VA_ARGS__
+#define ae2f_WhenC(...) __VA_ARGS__
 
 #endif // defined(__cplusplus)
 
 /// @brief
 /// Initialiser for trivial structures / classes.
-#define ae2f_record_make(type, ...) (ae2f_add_when_c((type) { __VA_ARGS__ }) ae2f_add_when_cxx(type{ __VA_ARGS__ }))
+#define ae2f_RecordMk(type, ...) (ae2f_WhenC((type) { __VA_ARGS__ }) ae2f_WhenCXX(type{ __VA_ARGS__ }))
 
 /// @brief
 /// # static_cast
-#define ae2f_static_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(static_cast<t>(v))
+#define ae2f_static_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(static_cast<t>(v))
 
 /// @brief
 /// # dynamic_cast
-#define ae2f_dynamic_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(dynamic_cast<t>(v))
+#define ae2f_dynamic_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(dynamic_cast<t>(v))
 
 /// @brief
 /// # reinterpret_cast
-#define ae2f_reinterpret_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(reinterpret_cast<t>(v))
+#define ae2f_reinterpret_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(reinterpret_cast<t>(v))
 
 /// @brief
 /// # const_cast
-#define ae2f_const_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(const_cast<t>(v))
+#define ae2f_const_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(const_cast<t>(v))
 
 /// @brief
 /// Makes a union that reads a memory in two methods. \n
@@ -185,26 +220,26 @@ union ae2f_union_caster {
 ///
 /// @param v
 /// Input value
-#define ae2f_union_cast(tThen, tNow, v) ae2f_add_when_c((union { tThen a; tNow b; }) { v }) ae2f_add_when_cxx(ae2f_union_caster<tThen, tNow>{ v }) .b
+#define ae2f_union_cast(tThen, tNow, v) ae2f_WhenC((union { tThen a; tNow b; }) { v }) ae2f_WhenCXX(ae2f_UnionCaster<tThen, tNow>{ v }) .b
 
 /// @brief
 /// In C, keyword 'struct' must be written in front of the structure's name in order to use as a type name. \n
 /// In C++ that keyword is not required.
 /// 
 /// This keyword resolves the difference of the rules of two.
-#define ae2f_struct ae2f_add_when_c(struct)
+#define ae2f_struct ae2f_WhenC(struct)
 
 /// @brief
 /// Suggests the existence of external variable or function, in naming of C. [non-mangling]
-#define ae2f_extern ae2f_add_when_c(extern) ae2f_add_when_cxx(extern "C")
+#define ae2f_extern ae2f_WhenC(extern) ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Class 
-#define ae2f_class ae2f_add_when_c(struct) ae2f_add_when_cxx(class)
+#define ae2f_class ae2f_WhenC(struct) ae2f_WhenCXX(class)
 
 /// @brief
 /// Makes the global variable in naming of C. [non-mangling]
-#define ae2f_var ae2f_add_when_cxx(extern "C")
+#define ae2f_var ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Function definitions
@@ -426,17 +461,24 @@ struct ae2f_cBmpSrcCpyPrm {
 
 /// @brief
 /// @ref ae2f_cBmpSrcCpyPrm::ReverseIdx
-#define ae2f_eBmpSrcCpyPrm_RVSE_I_X ae2f_static_cast(uint8_t, 	0b01)
+#define ae2f_eBmpSrcCpyPrm_RVSE_I_X 0b01
 
 /// @brief
 /// @ref ae2f_cBmpSrcCpyPrm::ReverseIdx
-#define ae2f_eBmpSrcCpyPrm_RVSE_I_Y ae2f_static_cast(uint8_t, 	0b10)
+#define ae2f_eBmpSrcCpyPrm_RVSE_I_Y 0b10
 
 /// @brief
 /// Contains additional the colour values for indexed bmp.
 /// @param len Length of the colour index.
 /// @see ae2f_cBmpSrcCpyPrm
 #define ae2f_cBmpSrcCpyPrmDef(len) struct ae2f_cBmpSrcCpyPrmDef_i##len { ae2f_struct ae2f_cBmpSrcCpyPrm global; uint32_t ColourIdx[len]; }
+
+#ifndef ae2f_ptrBmpSrcUInt8
+/// @brief
+/// Pointer type of 8-bit integer type suggested. \n
+/// Default will be [uint8_t*].
+#define ae2f_ptrBmpSrcUInt8 uint8_t*
+#endif
 
 /// @brief 
 /// Represents the source of the bitmap. \n 
@@ -454,7 +496,7 @@ struct ae2f_cBmpSrc {
 
 	/// @brief
 	/// Real element[pixel] vector [Global]
-	uint8_t* Addr;
+	ae2f_ptrBmpSrcUInt8 Addr;
 };
 
 /// @brief 
@@ -594,7 +636,7 @@ ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2f_cBmpSrcCpyPartial(
 /// @return 
 ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2f_cBmpSrcRef(
 	ae2f_struct ae2f_cBmpSrc* dest,
-	uint8_t* byte,
+	ae2f_ptrBmpSrcUInt8 byte,
 	size_t byteLength
 );
 
@@ -612,21 +654,54 @@ ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2f_cBmpSrcRef(
 #if !defined(ae2f_Cmp_h)
 #define ae2f_Cmp_h
 
+#ifndef ae2f_Cmp_Fun_h
+#define ae2f_Cmp_Fun_h
+
+/// @brief 
+/// A predefined returning data type for @ref ae2f_fpCmp_t.
+/// @see ae2f_CmpFunRet_EQUAL
+/// @see ae2f_CmpFunRet_RISLESSER
+/// @see ae2f_CmpFunRet_LISLESSER
+typedef int ae2f_CmpFunRet_t;
+
+/// @brief
+/// It is an api for following approximate pseudo code.
+/// ```c
+/// *l - *r
+/// ```
+/// @see ae2f_CmpFunRet_t
+typedef ae2f_CmpFunRet_t(*ae2f_fpCmp_t)(const void* l, const void* r);
+
+/// @brief they are same
+/// @see ae2f_CmpFunRet_t 
+#define ae2f_CmpFunRet_EQUAL		0
+
+/// @brief right is lesser
+/// @see ae2f_CmpFunRet_t
+#define ae2f_CmpFunRet_RISLESSER	1
+
+/// @brief left is lesser
+/// @see ae2f_CmpFunRet_t
+#define ae2f_CmpFunRet_LISLESSER	-1
+
+#endif
+
+
 /// @warning
 /// Two parameters must be comparable with operator.
 /// @return
 /// One bigger.
-#define ae2f_Cmp_TakeGt(a, b)		((a) > (b) ? (a) : (b))
+#define ae2f_CmpGetGt(a, b)		((a) > (b) ? (a) : (b))
 
 /// @warning
 /// Two parameters must be comparable with operator.
 /// @return
 /// One smaller.
-#define ae2f_Cmp_TakeLs(a, b)	((a) < (b) ? (a) : (b))
+#define ae2f_CmpGetLs(a, b)	((a) < (b) ? (a) : (b))
 
 /// @return
 /// The absolute different of two.
-#define ae2f_Cmp_Diff(a, b)			(ae2f_Cmp_TakeGt(a, b) - ae2f_Cmp_TakeLs(a, b))
+#define ae2f_CmpDiff(a, b)			(ae2f_CmpGetGt(a, b) - ae2f_CmpGetLs(a, b))
 
 /// @brief
 /// Gets the member from the pointer.
@@ -634,14 +709,14 @@ ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2f_cBmpSrcRef(
 /// @param ptr The pointer for getting member.
 /// @param member The valid member's name. [from the structure]
 /// @param alter The alternative value when given nullptr.
-#define ae2f_Cmp_TakeMem(ptr, member, alter) ((ptr) ? ((ptr)->member) : (alter))
+#define ae2f_CmpGetMem(ptr, member, alter) ((ptr) ? ((ptr)->member) : (alter))
 
 /// @brief
 /// Returns ptr's self.
 /// Given nullptr, the return will be alt.
 /// @param ptr Self Referring
 /// @param alt The alternative value.
-#define ae2f_Cmp_TakeSelf(ptr, alt) ((ptr) ? (ptr) : (alt))
+#define ae2f_CmpGetSelf(ptr, alt) ((ptr) ? (ptr) : (alt))
 #endif // !defined(ae2f_Macro_Compare_h)
 
 #if !defined(ae2f_Bmp_Dot_h)
@@ -651,20 +726,20 @@ ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2f_cBmpSrcRef(
 
 #pragma endregion
 
-#if !defined(ae2f_Macro_Cast_h)
+#if !defined(ae2f_Cast_h)
 
 /// @brief
 /// asdf
-#define ae2f_Macro_Cast_h
+#define ae2f_Cast_h
 
 /// @brief
 /// ANSI Code for clearing the console.
 /// Clearing all display, moving the cursor on the top.
-#define ae2f_Cast_CCls "\033[2J\033[H"
+#define ae2f_CastCCls "\033[2J\033[H"
 
 /// @brief
 /// simply merge all text inside the round bracket, counting them as a single text block.
-#define ae2f_Cast_Merge(...) __VA_ARGS__
+#define ae2f_CastMerge(...) __VA_ARGS__
 
 
 #if defined(__cplusplus)
@@ -679,7 +754,7 @@ ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2f_cBmpSrcRef(
 /// @see
 /// @ref ae2f_union_cast
 template<typename t, typename k>
-union ae2f_union_caster {
+union ae2f_UnionCaster {
 	t a;
 	k b;
 };
@@ -689,43 +764,43 @@ union ae2f_union_caster {
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...) __VA_ARGS__
+#define ae2f_WhenCXX(...) __VA_ARGS__
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...)
+#define ae2f_WhenC(...)
 
 #else
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...)
+#define ae2f_WhenCXX(...)
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...) __VA_ARGS__
+#define ae2f_WhenC(...) __VA_ARGS__
 
 #endif // defined(__cplusplus)
 
 /// @brief
 /// Initialiser for trivial structures / classes.
-#define ae2f_record_make(type, ...) (ae2f_add_when_c((type) { __VA_ARGS__ }) ae2f_add_when_cxx(type{ __VA_ARGS__ }))
+#define ae2f_RecordMk(type, ...) (ae2f_WhenC((type) { __VA_ARGS__ }) ae2f_WhenCXX(type{ __VA_ARGS__ }))
 
 /// @brief
 /// # static_cast
-#define ae2f_static_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(static_cast<t>(v))
+#define ae2f_static_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(static_cast<t>(v))
 
 /// @brief
 /// # dynamic_cast
-#define ae2f_dynamic_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(dynamic_cast<t>(v))
+#define ae2f_dynamic_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(dynamic_cast<t>(v))
 
 /// @brief
 /// # reinterpret_cast
-#define ae2f_reinterpret_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(reinterpret_cast<t>(v))
+#define ae2f_reinterpret_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(reinterpret_cast<t>(v))
 
 /// @brief
 /// # const_cast
-#define ae2f_const_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(const_cast<t>(v))
+#define ae2f_const_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(const_cast<t>(v))
 
 /// @brief
 /// Makes a union that reads a memory in two methods. \n
@@ -738,26 +813,26 @@ union ae2f_union_caster {
 ///
 /// @param v
 /// Input value
-#define ae2f_union_cast(tThen, tNow, v) ae2f_add_when_c((union { tThen a; tNow b; }) { v }) ae2f_add_when_cxx(ae2f_union_caster<tThen, tNow>{ v }) .b
+#define ae2f_union_cast(tThen, tNow, v) ae2f_WhenC((union { tThen a; tNow b; }) { v }) ae2f_WhenCXX(ae2f_UnionCaster<tThen, tNow>{ v }) .b
 
 /// @brief
 /// In C, keyword 'struct' must be written in front of the structure's name in order to use as a type name. \n
 /// In C++ that keyword is not required.
 /// 
 /// This keyword resolves the difference of the rules of two.
-#define ae2f_struct ae2f_add_when_c(struct)
+#define ae2f_struct ae2f_WhenC(struct)
 
 /// @brief
 /// Suggests the existence of external variable or function, in naming of C. [non-mangling]
-#define ae2f_extern ae2f_add_when_c(extern) ae2f_add_when_cxx(extern "C")
+#define ae2f_extern ae2f_WhenC(extern) ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Class 
-#define ae2f_class ae2f_add_when_c(struct) ae2f_add_when_cxx(class)
+#define ae2f_class ae2f_WhenC(struct) ae2f_WhenCXX(class)
 
 /// @brief
 /// Makes the global variable in naming of C. [non-mangling]
-#define ae2f_var ae2f_add_when_cxx(extern "C")
+#define ae2f_var ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Function definitions
@@ -768,20 +843,20 @@ union ae2f_union_caster {
 #if !defined(ae2f_BitVec_h)
 #define ae2f_BitVec_h
 
-#if !defined(ae2f_Macro_Cast_h)
+#if !defined(ae2f_Cast_h)
 
 /// @brief
 /// asdf
-#define ae2f_Macro_Cast_h
+#define ae2f_Cast_h
 
 /// @brief
 /// ANSI Code for clearing the console.
 /// Clearing all display, moving the cursor on the top.
-#define ae2f_Cast_CCls "\033[2J\033[H"
+#define ae2f_CastCCls "\033[2J\033[H"
 
 /// @brief
 /// simply merge all text inside the round bracket, counting them as a single text block.
-#define ae2f_Cast_Merge(...) __VA_ARGS__
+#define ae2f_CastMerge(...) __VA_ARGS__
 
 
 #if defined(__cplusplus)
@@ -796,7 +871,7 @@ union ae2f_union_caster {
 /// @see
 /// @ref ae2f_union_cast
 template<typename t, typename k>
-union ae2f_union_caster {
+union ae2f_UnionCaster {
 	t a;
 	k b;
 };
@@ -806,43 +881,43 @@ union ae2f_union_caster {
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...) __VA_ARGS__
+#define ae2f_WhenCXX(...) __VA_ARGS__
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...)
+#define ae2f_WhenC(...)
 
 #else
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...)
+#define ae2f_WhenCXX(...)
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...) __VA_ARGS__
+#define ae2f_WhenC(...) __VA_ARGS__
 
 #endif // defined(__cplusplus)
 
 /// @brief
 /// Initialiser for trivial structures / classes.
-#define ae2f_record_make(type, ...) (ae2f_add_when_c((type) { __VA_ARGS__ }) ae2f_add_when_cxx(type{ __VA_ARGS__ }))
+#define ae2f_RecordMk(type, ...) (ae2f_WhenC((type) { __VA_ARGS__ }) ae2f_WhenCXX(type{ __VA_ARGS__ }))
 
 /// @brief
 /// # static_cast
-#define ae2f_static_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(static_cast<t>(v))
+#define ae2f_static_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(static_cast<t>(v))
 
 /// @brief
 /// # dynamic_cast
-#define ae2f_dynamic_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(dynamic_cast<t>(v))
+#define ae2f_dynamic_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(dynamic_cast<t>(v))
 
 /// @brief
 /// # reinterpret_cast
-#define ae2f_reinterpret_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(reinterpret_cast<t>(v))
+#define ae2f_reinterpret_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(reinterpret_cast<t>(v))
 
 /// @brief
 /// # const_cast
-#define ae2f_const_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(const_cast<t>(v))
+#define ae2f_const_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(const_cast<t>(v))
 
 /// @brief
 /// Makes a union that reads a memory in two methods. \n
@@ -855,26 +930,26 @@ union ae2f_union_caster {
 ///
 /// @param v
 /// Input value
-#define ae2f_union_cast(tThen, tNow, v) ae2f_add_when_c((union { tThen a; tNow b; }) { v }) ae2f_add_when_cxx(ae2f_union_caster<tThen, tNow>{ v }) .b
+#define ae2f_union_cast(tThen, tNow, v) ae2f_WhenC((union { tThen a; tNow b; }) { v }) ae2f_WhenCXX(ae2f_UnionCaster<tThen, tNow>{ v }) .b
 
 /// @brief
 /// In C, keyword 'struct' must be written in front of the structure's name in order to use as a type name. \n
 /// In C++ that keyword is not required.
 /// 
 /// This keyword resolves the difference of the rules of two.
-#define ae2f_struct ae2f_add_when_c(struct)
+#define ae2f_struct ae2f_WhenC(struct)
 
 /// @brief
 /// Suggests the existence of external variable or function, in naming of C. [non-mangling]
-#define ae2f_extern ae2f_add_when_c(extern) ae2f_add_when_cxx(extern "C")
+#define ae2f_extern ae2f_WhenC(extern) ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Class 
-#define ae2f_class ae2f_add_when_c(struct) ae2f_add_when_cxx(class)
+#define ae2f_class ae2f_WhenC(struct) ae2f_WhenCXX(class)
 
 /// @brief
 /// Makes the global variable in naming of C. [non-mangling]
-#define ae2f_var ae2f_add_when_cxx(extern "C")
+#define ae2f_var ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Function definitions
@@ -885,21 +960,54 @@ union ae2f_union_caster {
 #if !defined(ae2f_Cmp_h)
 #define ae2f_Cmp_h
 
+#ifndef ae2f_Cmp_Fun_h
+#define ae2f_Cmp_Fun_h
+
+/// @brief 
+/// A predefined returning data type for @ref ae2f_fpCmp_t.
+/// @see ae2f_CmpFunRet_EQUAL
+/// @see ae2f_CmpFunRet_RISLESSER
+/// @see ae2f_CmpFunRet_LISLESSER
+typedef int ae2f_CmpFunRet_t;
+
+/// @brief
+/// It is an api for following approximate pseudo code.
+/// ```c
+/// *l - *r
+/// ```
+/// @see ae2f_CmpFunRet_t
+typedef ae2f_CmpFunRet_t(*ae2f_fpCmp_t)(const void* l, const void* r);
+
+/// @brief they are same
+/// @see ae2f_CmpFunRet_t 
+#define ae2f_CmpFunRet_EQUAL		0
+
+/// @brief right is lesser
+/// @see ae2f_CmpFunRet_t
+#define ae2f_CmpFunRet_RISLESSER	1
+
+/// @brief left is lesser
+/// @see ae2f_CmpFunRet_t
+#define ae2f_CmpFunRet_LISLESSER	-1
+
+#endif
+
+
 /// @warning
 /// Two parameters must be comparable with operator.
 /// @return
 /// One bigger.
-#define ae2f_Cmp_TakeGt(a, b)		((a) > (b) ? (a) : (b))
+#define ae2f_CmpGetGt(a, b)		((a) > (b) ? (a) : (b))
 
 /// @warning
 /// Two parameters must be comparable with operator.
 /// @return
 /// One smaller.
-#define ae2f_Cmp_TakeLs(a, b)	((a) < (b) ? (a) : (b))
+#define ae2f_CmpGetLs(a, b)	((a) < (b) ? (a) : (b))
 
 /// @return
 /// The absolute different of two.
-#define ae2f_Cmp_Diff(a, b)			(ae2f_Cmp_TakeGt(a, b) - ae2f_Cmp_TakeLs(a, b))
+#define ae2f_CmpDiff(a, b)			(ae2f_CmpGetGt(a, b) - ae2f_CmpGetLs(a, b))
 
 /// @brief
 /// Gets the member from the pointer.
@@ -907,14 +1015,14 @@ union ae2f_union_caster {
 /// @param ptr The pointer for getting member.
 /// @param member The valid member's name. [from the structure]
 /// @param alter The alternative value when given nullptr.
-#define ae2f_Cmp_TakeMem(ptr, member, alter) ((ptr) ? ((ptr)->member) : (alter))
+#define ae2f_CmpGetMem(ptr, member, alter) ((ptr) ? ((ptr)->member) : (alter))
 
 /// @brief
 /// Returns ptr's self.
 /// Given nullptr, the return will be alt.
 /// @param ptr Self Referring
 /// @param alt The alternative value.
-#define ae2f_Cmp_TakeSelf(ptr, alt) ((ptr) ? (ptr) : (alt))
+#define ae2f_CmpGetSelf(ptr, alt) ((ptr) ? (ptr) : (alt))
 #endif // !defined(ae2f_Macro_Compare_h)
 
 
@@ -925,11 +1033,11 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @brief Generates the vector filled in `1`.
 /// @param len The length of the filled vector.
 /// @tparam vec_t The integer data type.
-#define _ae2f_BitVec_Filled(len, vec_t) ae2f_static_cast(vec_t, (sizeof(vec_t) << 3) == (len) ? ae2f_static_cast(vec_t, -1) : (ae2f_static_cast(vec_t, ae2f_static_cast(vec_t, 1) << (len)) - 1))
+#define _ae2f_BitVecFilled(len, vec_t) ae2f_static_cast(vec_t, (sizeof(vec_t) << 3) == (len) ? ae2f_static_cast(vec_t, -1) : (ae2f_static_cast(vec_t, ae2f_static_cast(vec_t, 1) << (len)) - 1))
 
 /// @brief Generates the vector filled in `1`.
 /// @param len {ae2f_Macro_BitVecI_t} The length of the filled vector.
-#define ae2f_BitVec_Filled(len) _ae2f_BitVec_Filled(len, size_t)
+#define ae2f_BitVecFilled(len) _ae2f_BitVecFilled(len, size_t)
 
 /// @brief
 /// Gets the bits of [vector] between index of [start] and [end].
@@ -939,7 +1047,7 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @tparam vec_t The integer data type.
 /// @warning
 /// [start] greater than [end] may cause undefined behaviour.
-#define _ae2f_BitVec_GetRanged(vector, start, end, vec_t) (((vector) >> (start)) & _ae2f_BitVec_Filled((end) - (start), vec_t))
+#define _ae2f_BitVecGetRanged(vector, start, end, vec_t) (((vector) >> (start)) & _ae2f_BitVecFilled((end) - (start), vec_t))
 
 /// @brief
 /// Gets the bits of [vector] between index of [start] and [end]. \n
@@ -948,14 +1056,14 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @param start {ae2f_Macro_BitVecI_t} The starting index.
 /// @param end {ae2f_Macro_BitVecI_t} The ending index.
 /// @see _ae2f_Macro_BitVec_GetRanged
-#define ae2f_BitVec_GetRanged(vector, start, end) _ae2f_BitVec_GetRanged(vector, ae2f_Cmp_TakeLs(start, end), ae2f_Cmp_TakeGt(start, end), size_t)
+#define ae2f_BitVecGetRanged(vector, start, end) _ae2f_BitVecGetRanged(vector, ae2f_CmpGetLs(start, end), ae2f_CmpGetGt(start, end), size_t)
 
 /// @brief
 /// Gets a bit of [vector] from index of [idx].
 /// @param vector {size_t} The target for operation.
 /// @param idx {ae2f_Macro_BitVecI_t} The wanted index for searching.
 /// @see ae2f_Macro_BitVec_GetRanged
-#define ae2f_BitVec_Get(vector, idx) ae2f_BitVec_GetRanged(vector, idx, (idx) + 1)
+#define ae2f_BitVecGet(vector, idx) ae2f_BitVecGetRanged(vector, idx, (idx) + 1)
 
 /// @brief
 /// Sets the bits of [vector] from index of [start] and [end] by [val].
@@ -966,7 +1074,7 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @tparam vec_t The integer data type.
 /// @warning
 /// [start] greater than [end] may cause undefined behaviour.
-#define _ae2f_BitVec_SetRanged(vector, start, end, val, vec_t) ((vector) & (~((_ae2f_BitVec_Filled((end) - (start), vec_t)) << start)) | ((val) << start))
+#define _ae2f_BitVecSetRanged(vector, start, end, val, vec_t) ((vector) & (~((_ae2f_BitVecFilled((end) - (start), vec_t)) << start)) | ((val) << start))
 
 /// @brief
 /// Sets the bits of [vector] from index of [start] and [end] by [val]. \n
@@ -975,14 +1083,14 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @param start {ae2f_Macro_BitVecI_t} The starting index.
 /// @param end {ae2f_Macro_BitVecI_t} The ending index.
 /// @param val {size_t} The value to set.
-#define ae2f_BitVec_SetRanged(vector, start, end, val) _ae2f_BitVec_SetRanged(vector, ae2f_Cmp_TakeLs(start, end), ae2f_Cmp_TakeGt(start, end), (val) & ae2f_BitVec_Filled(ae2f_Cmp_Diff(start, end)), size_t)
+#define ae2f_BitVecSetRanged(vector, start, end, val) _ae2f_BitVecSetRanged(vector, ae2f_CmpGetLs(start, end), ae2f_CmpGetGt(start, end), (val) & ae2f_BitVecFilled(ae2f_CmpDiff(start, end)), size_t)
 
 /// @brief
 /// Sets a bit of [vector] from index of [idx] by [val].
 /// @param vector {size_t} The target for operation.
 /// @param idx {bool} The wanted index for searching.
 /// @see ae2f_Macro_BitVec_GetRanged
-#define ae2f_BitVec_Set(vector, idx, val) ae2f_BitVec_SetRanged(vector, idx, (idx) + 1, val)
+#define ae2f_BitVecSet(vector, idx, val) ae2f_BitVecSetRanged(vector, idx, (idx) + 1, val)
 
 #endif // !defined(ae2f_Macro_BitVector_h)
 
@@ -996,7 +1104,7 @@ typedef float ae2f_float_t;
 
 /// @brief 
 /// 32 - byte which means has four channels of [r, g, b, a].
-typedef uint32_t ae2f_Bmp_Dot_rgba_t;
+typedef uint32_t ae2f_BmpDotRGBA_t;
 
 #pragma region RGBA get-set
 
@@ -1086,20 +1194,20 @@ typedef uint32_t ae2f_Bmp_Dot_rgba_t;
 #if !defined(ae2f_BitVec_h)
 #define ae2f_BitVec_h
 
-#if !defined(ae2f_Macro_Cast_h)
+#if !defined(ae2f_Cast_h)
 
 /// @brief
 /// asdf
-#define ae2f_Macro_Cast_h
+#define ae2f_Cast_h
 
 /// @brief
 /// ANSI Code for clearing the console.
 /// Clearing all display, moving the cursor on the top.
-#define ae2f_Cast_CCls "\033[2J\033[H"
+#define ae2f_CastCCls "\033[2J\033[H"
 
 /// @brief
 /// simply merge all text inside the round bracket, counting them as a single text block.
-#define ae2f_Cast_Merge(...) __VA_ARGS__
+#define ae2f_CastMerge(...) __VA_ARGS__
 
 
 #if defined(__cplusplus)
@@ -1114,7 +1222,7 @@ typedef uint32_t ae2f_Bmp_Dot_rgba_t;
 /// @see
 /// @ref ae2f_union_cast
 template<typename t, typename k>
-union ae2f_union_caster {
+union ae2f_UnionCaster {
 	t a;
 	k b;
 };
@@ -1124,43 +1232,43 @@ union ae2f_union_caster {
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...) __VA_ARGS__
+#define ae2f_WhenCXX(...) __VA_ARGS__
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...)
+#define ae2f_WhenC(...)
 
 #else
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...)
+#define ae2f_WhenCXX(...)
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...) __VA_ARGS__
+#define ae2f_WhenC(...) __VA_ARGS__
 
 #endif // defined(__cplusplus)
 
 /// @brief
 /// Initialiser for trivial structures / classes.
-#define ae2f_record_make(type, ...) (ae2f_add_when_c((type) { __VA_ARGS__ }) ae2f_add_when_cxx(type{ __VA_ARGS__ }))
+#define ae2f_RecordMk(type, ...) (ae2f_WhenC((type) { __VA_ARGS__ }) ae2f_WhenCXX(type{ __VA_ARGS__ }))
 
 /// @brief
 /// # static_cast
-#define ae2f_static_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(static_cast<t>(v))
+#define ae2f_static_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(static_cast<t>(v))
 
 /// @brief
 /// # dynamic_cast
-#define ae2f_dynamic_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(dynamic_cast<t>(v))
+#define ae2f_dynamic_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(dynamic_cast<t>(v))
 
 /// @brief
 /// # reinterpret_cast
-#define ae2f_reinterpret_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(reinterpret_cast<t>(v))
+#define ae2f_reinterpret_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(reinterpret_cast<t>(v))
 
 /// @brief
 /// # const_cast
-#define ae2f_const_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(const_cast<t>(v))
+#define ae2f_const_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(const_cast<t>(v))
 
 /// @brief
 /// Makes a union that reads a memory in two methods. \n
@@ -1173,26 +1281,26 @@ union ae2f_union_caster {
 ///
 /// @param v
 /// Input value
-#define ae2f_union_cast(tThen, tNow, v) ae2f_add_when_c((union { tThen a; tNow b; }) { v }) ae2f_add_when_cxx(ae2f_union_caster<tThen, tNow>{ v }) .b
+#define ae2f_union_cast(tThen, tNow, v) ae2f_WhenC((union { tThen a; tNow b; }) { v }) ae2f_WhenCXX(ae2f_UnionCaster<tThen, tNow>{ v }) .b
 
 /// @brief
 /// In C, keyword 'struct' must be written in front of the structure's name in order to use as a type name. \n
 /// In C++ that keyword is not required.
 /// 
 /// This keyword resolves the difference of the rules of two.
-#define ae2f_struct ae2f_add_when_c(struct)
+#define ae2f_struct ae2f_WhenC(struct)
 
 /// @brief
 /// Suggests the existence of external variable or function, in naming of C. [non-mangling]
-#define ae2f_extern ae2f_add_when_c(extern) ae2f_add_when_cxx(extern "C")
+#define ae2f_extern ae2f_WhenC(extern) ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Class 
-#define ae2f_class ae2f_add_when_c(struct) ae2f_add_when_cxx(class)
+#define ae2f_class ae2f_WhenC(struct) ae2f_WhenCXX(class)
 
 /// @brief
 /// Makes the global variable in naming of C. [non-mangling]
-#define ae2f_var ae2f_add_when_cxx(extern "C")
+#define ae2f_var ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Function definitions
@@ -1203,21 +1311,54 @@ union ae2f_union_caster {
 #if !defined(ae2f_Cmp_h)
 #define ae2f_Cmp_h
 
+#ifndef ae2f_Cmp_Fun_h
+#define ae2f_Cmp_Fun_h
+
+/// @brief 
+/// A predefined returning data type for @ref ae2f_fpCmp_t.
+/// @see ae2f_CmpFunRet_EQUAL
+/// @see ae2f_CmpFunRet_RISLESSER
+/// @see ae2f_CmpFunRet_LISLESSER
+typedef int ae2f_CmpFunRet_t;
+
+/// @brief
+/// It is an api for following approximate pseudo code.
+/// ```c
+/// *l - *r
+/// ```
+/// @see ae2f_CmpFunRet_t
+typedef ae2f_CmpFunRet_t(*ae2f_fpCmp_t)(const void* l, const void* r);
+
+/// @brief they are same
+/// @see ae2f_CmpFunRet_t 
+#define ae2f_CmpFunRet_EQUAL		0
+
+/// @brief right is lesser
+/// @see ae2f_CmpFunRet_t
+#define ae2f_CmpFunRet_RISLESSER	1
+
+/// @brief left is lesser
+/// @see ae2f_CmpFunRet_t
+#define ae2f_CmpFunRet_LISLESSER	-1
+
+#endif
+
+
 /// @warning
 /// Two parameters must be comparable with operator.
 /// @return
 /// One bigger.
-#define ae2f_Cmp_TakeGt(a, b)		((a) > (b) ? (a) : (b))
+#define ae2f_CmpGetGt(a, b)		((a) > (b) ? (a) : (b))
 
 /// @warning
 /// Two parameters must be comparable with operator.
 /// @return
 /// One smaller.
-#define ae2f_Cmp_TakeLs(a, b)	((a) < (b) ? (a) : (b))
+#define ae2f_CmpGetLs(a, b)	((a) < (b) ? (a) : (b))
 
 /// @return
 /// The absolute different of two.
-#define ae2f_Cmp_Diff(a, b)			(ae2f_Cmp_TakeGt(a, b) - ae2f_Cmp_TakeLs(a, b))
+#define ae2f_CmpDiff(a, b)			(ae2f_CmpGetGt(a, b) - ae2f_CmpGetLs(a, b))
 
 /// @brief
 /// Gets the member from the pointer.
@@ -1225,14 +1366,14 @@ union ae2f_union_caster {
 /// @param ptr The pointer for getting member.
 /// @param member The valid member's name. [from the structure]
 /// @param alter The alternative value when given nullptr.
-#define ae2f_Cmp_TakeMem(ptr, member, alter) ((ptr) ? ((ptr)->member) : (alter))
+#define ae2f_CmpGetMem(ptr, member, alter) ((ptr) ? ((ptr)->member) : (alter))
 
 /// @brief
 /// Returns ptr's self.
 /// Given nullptr, the return will be alt.
 /// @param ptr Self Referring
 /// @param alt The alternative value.
-#define ae2f_Cmp_TakeSelf(ptr, alt) ((ptr) ? (ptr) : (alt))
+#define ae2f_CmpGetSelf(ptr, alt) ((ptr) ? (ptr) : (alt))
 #endif // !defined(ae2f_Macro_Compare_h)
 
 
@@ -1243,11 +1384,11 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @brief Generates the vector filled in `1`.
 /// @param len The length of the filled vector.
 /// @tparam vec_t The integer data type.
-#define _ae2f_BitVec_Filled(len, vec_t) ae2f_static_cast(vec_t, (sizeof(vec_t) << 3) == (len) ? ae2f_static_cast(vec_t, -1) : (ae2f_static_cast(vec_t, ae2f_static_cast(vec_t, 1) << (len)) - 1))
+#define _ae2f_BitVecFilled(len, vec_t) ae2f_static_cast(vec_t, (sizeof(vec_t) << 3) == (len) ? ae2f_static_cast(vec_t, -1) : (ae2f_static_cast(vec_t, ae2f_static_cast(vec_t, 1) << (len)) - 1))
 
 /// @brief Generates the vector filled in `1`.
 /// @param len {ae2f_Macro_BitVecI_t} The length of the filled vector.
-#define ae2f_BitVec_Filled(len) _ae2f_BitVec_Filled(len, size_t)
+#define ae2f_BitVecFilled(len) _ae2f_BitVecFilled(len, size_t)
 
 /// @brief
 /// Gets the bits of [vector] between index of [start] and [end].
@@ -1257,7 +1398,7 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @tparam vec_t The integer data type.
 /// @warning
 /// [start] greater than [end] may cause undefined behaviour.
-#define _ae2f_BitVec_GetRanged(vector, start, end, vec_t) (((vector) >> (start)) & _ae2f_BitVec_Filled((end) - (start), vec_t))
+#define _ae2f_BitVecGetRanged(vector, start, end, vec_t) (((vector) >> (start)) & _ae2f_BitVecFilled((end) - (start), vec_t))
 
 /// @brief
 /// Gets the bits of [vector] between index of [start] and [end]. \n
@@ -1266,14 +1407,14 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @param start {ae2f_Macro_BitVecI_t} The starting index.
 /// @param end {ae2f_Macro_BitVecI_t} The ending index.
 /// @see _ae2f_Macro_BitVec_GetRanged
-#define ae2f_BitVec_GetRanged(vector, start, end) _ae2f_BitVec_GetRanged(vector, ae2f_Cmp_TakeLs(start, end), ae2f_Cmp_TakeGt(start, end), size_t)
+#define ae2f_BitVecGetRanged(vector, start, end) _ae2f_BitVecGetRanged(vector, ae2f_CmpGetLs(start, end), ae2f_CmpGetGt(start, end), size_t)
 
 /// @brief
 /// Gets a bit of [vector] from index of [idx].
 /// @param vector {size_t} The target for operation.
 /// @param idx {ae2f_Macro_BitVecI_t} The wanted index for searching.
 /// @see ae2f_Macro_BitVec_GetRanged
-#define ae2f_BitVec_Get(vector, idx) ae2f_BitVec_GetRanged(vector, idx, (idx) + 1)
+#define ae2f_BitVecGet(vector, idx) ae2f_BitVecGetRanged(vector, idx, (idx) + 1)
 
 /// @brief
 /// Sets the bits of [vector] from index of [start] and [end] by [val].
@@ -1284,7 +1425,7 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @tparam vec_t The integer data type.
 /// @warning
 /// [start] greater than [end] may cause undefined behaviour.
-#define _ae2f_BitVec_SetRanged(vector, start, end, val, vec_t) ((vector) & (~((_ae2f_BitVec_Filled((end) - (start), vec_t)) << start)) | ((val) << start))
+#define _ae2f_BitVecSetRanged(vector, start, end, val, vec_t) ((vector) & (~((_ae2f_BitVecFilled((end) - (start), vec_t)) << start)) | ((val) << start))
 
 /// @brief
 /// Sets the bits of [vector] from index of [start] and [end] by [val]. \n
@@ -1293,34 +1434,34 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @param start {ae2f_Macro_BitVecI_t} The starting index.
 /// @param end {ae2f_Macro_BitVecI_t} The ending index.
 /// @param val {size_t} The value to set.
-#define ae2f_BitVec_SetRanged(vector, start, end, val) _ae2f_BitVec_SetRanged(vector, ae2f_Cmp_TakeLs(start, end), ae2f_Cmp_TakeGt(start, end), (val) & ae2f_BitVec_Filled(ae2f_Cmp_Diff(start, end)), size_t)
+#define ae2f_BitVecSetRanged(vector, start, end, val) _ae2f_BitVecSetRanged(vector, ae2f_CmpGetLs(start, end), ae2f_CmpGetGt(start, end), (val) & ae2f_BitVecFilled(ae2f_CmpDiff(start, end)), size_t)
 
 /// @brief
 /// Sets a bit of [vector] from index of [idx] by [val].
 /// @param vector {size_t} The target for operation.
 /// @param idx {bool} The wanted index for searching.
 /// @see ae2f_Macro_BitVec_GetRanged
-#define ae2f_BitVec_Set(vector, idx, val) ae2f_BitVec_SetRanged(vector, idx, (idx) + 1, val)
+#define ae2f_BitVecSet(vector, idx, val) ae2f_BitVecSetRanged(vector, idx, (idx) + 1, val)
 
 #endif // !defined(ae2f_Macro_BitVector_h)
 
 #if !defined(ae2f_Bmp_Head_h)
 #define ae2f_Bmp_Head_h
 
-#if !defined(ae2f_Macro_Cast_h)
+#if !defined(ae2f_Cast_h)
 
 /// @brief
 /// asdf
-#define ae2f_Macro_Cast_h
+#define ae2f_Cast_h
 
 /// @brief
 /// ANSI Code for clearing the console.
 /// Clearing all display, moving the cursor on the top.
-#define ae2f_Cast_CCls "\033[2J\033[H"
+#define ae2f_CastCCls "\033[2J\033[H"
 
 /// @brief
 /// simply merge all text inside the round bracket, counting them as a single text block.
-#define ae2f_Cast_Merge(...) __VA_ARGS__
+#define ae2f_CastMerge(...) __VA_ARGS__
 
 
 #if defined(__cplusplus)
@@ -1335,7 +1476,7 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @see
 /// @ref ae2f_union_cast
 template<typename t, typename k>
-union ae2f_union_caster {
+union ae2f_UnionCaster {
 	t a;
 	k b;
 };
@@ -1345,43 +1486,43 @@ union ae2f_union_caster {
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...) __VA_ARGS__
+#define ae2f_WhenCXX(...) __VA_ARGS__
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...)
+#define ae2f_WhenC(...)
 
 #else
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...)
+#define ae2f_WhenCXX(...)
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...) __VA_ARGS__
+#define ae2f_WhenC(...) __VA_ARGS__
 
 #endif // defined(__cplusplus)
 
 /// @brief
 /// Initialiser for trivial structures / classes.
-#define ae2f_record_make(type, ...) (ae2f_add_when_c((type) { __VA_ARGS__ }) ae2f_add_when_cxx(type{ __VA_ARGS__ }))
+#define ae2f_RecordMk(type, ...) (ae2f_WhenC((type) { __VA_ARGS__ }) ae2f_WhenCXX(type{ __VA_ARGS__ }))
 
 /// @brief
 /// # static_cast
-#define ae2f_static_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(static_cast<t>(v))
+#define ae2f_static_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(static_cast<t>(v))
 
 /// @brief
 /// # dynamic_cast
-#define ae2f_dynamic_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(dynamic_cast<t>(v))
+#define ae2f_dynamic_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(dynamic_cast<t>(v))
 
 /// @brief
 /// # reinterpret_cast
-#define ae2f_reinterpret_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(reinterpret_cast<t>(v))
+#define ae2f_reinterpret_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(reinterpret_cast<t>(v))
 
 /// @brief
 /// # const_cast
-#define ae2f_const_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(const_cast<t>(v))
+#define ae2f_const_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(const_cast<t>(v))
 
 /// @brief
 /// Makes a union that reads a memory in two methods. \n
@@ -1394,26 +1535,26 @@ union ae2f_union_caster {
 ///
 /// @param v
 /// Input value
-#define ae2f_union_cast(tThen, tNow, v) ae2f_add_when_c((union { tThen a; tNow b; }) { v }) ae2f_add_when_cxx(ae2f_union_caster<tThen, tNow>{ v }) .b
+#define ae2f_union_cast(tThen, tNow, v) ae2f_WhenC((union { tThen a; tNow b; }) { v }) ae2f_WhenCXX(ae2f_UnionCaster<tThen, tNow>{ v }) .b
 
 /// @brief
 /// In C, keyword 'struct' must be written in front of the structure's name in order to use as a type name. \n
 /// In C++ that keyword is not required.
 /// 
 /// This keyword resolves the difference of the rules of two.
-#define ae2f_struct ae2f_add_when_c(struct)
+#define ae2f_struct ae2f_WhenC(struct)
 
 /// @brief
 /// Suggests the existence of external variable or function, in naming of C. [non-mangling]
-#define ae2f_extern ae2f_add_when_c(extern) ae2f_add_when_cxx(extern "C")
+#define ae2f_extern ae2f_WhenC(extern) ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Class 
-#define ae2f_class ae2f_add_when_c(struct) ae2f_add_when_cxx(class)
+#define ae2f_class ae2f_WhenC(struct) ae2f_WhenCXX(class)
 
 /// @brief
 /// Makes the global variable in naming of C. [non-mangling]
-#define ae2f_var ae2f_add_when_cxx(extern "C")
+#define ae2f_var ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Function definitions
@@ -1546,20 +1687,20 @@ struct ae2f_rBmpHead {
 
 #pragma endregion
 
-#if !defined(ae2f_Macro_Cast_h)
+#if !defined(ae2f_Cast_h)
 
 /// @brief
 /// asdf
-#define ae2f_Macro_Cast_h
+#define ae2f_Cast_h
 
 /// @brief
 /// ANSI Code for clearing the console.
 /// Clearing all display, moving the cursor on the top.
-#define ae2f_Cast_CCls "\033[2J\033[H"
+#define ae2f_CastCCls "\033[2J\033[H"
 
 /// @brief
 /// simply merge all text inside the round bracket, counting them as a single text block.
-#define ae2f_Cast_Merge(...) __VA_ARGS__
+#define ae2f_CastMerge(...) __VA_ARGS__
 
 
 #if defined(__cplusplus)
@@ -1574,7 +1715,7 @@ struct ae2f_rBmpHead {
 /// @see
 /// @ref ae2f_union_cast
 template<typename t, typename k>
-union ae2f_union_caster {
+union ae2f_UnionCaster {
 	t a;
 	k b;
 };
@@ -1584,43 +1725,43 @@ union ae2f_union_caster {
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...) __VA_ARGS__
+#define ae2f_WhenCXX(...) __VA_ARGS__
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...)
+#define ae2f_WhenC(...)
 
 #else
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...)
+#define ae2f_WhenCXX(...)
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...) __VA_ARGS__
+#define ae2f_WhenC(...) __VA_ARGS__
 
 #endif // defined(__cplusplus)
 
 /// @brief
 /// Initialiser for trivial structures / classes.
-#define ae2f_record_make(type, ...) (ae2f_add_when_c((type) { __VA_ARGS__ }) ae2f_add_when_cxx(type{ __VA_ARGS__ }))
+#define ae2f_RecordMk(type, ...) (ae2f_WhenC((type) { __VA_ARGS__ }) ae2f_WhenCXX(type{ __VA_ARGS__ }))
 
 /// @brief
 /// # static_cast
-#define ae2f_static_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(static_cast<t>(v))
+#define ae2f_static_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(static_cast<t>(v))
 
 /// @brief
 /// # dynamic_cast
-#define ae2f_dynamic_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(dynamic_cast<t>(v))
+#define ae2f_dynamic_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(dynamic_cast<t>(v))
 
 /// @brief
 /// # reinterpret_cast
-#define ae2f_reinterpret_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(reinterpret_cast<t>(v))
+#define ae2f_reinterpret_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(reinterpret_cast<t>(v))
 
 /// @brief
 /// # const_cast
-#define ae2f_const_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(const_cast<t>(v))
+#define ae2f_const_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(const_cast<t>(v))
 
 /// @brief
 /// Makes a union that reads a memory in two methods. \n
@@ -1633,26 +1774,26 @@ union ae2f_union_caster {
 ///
 /// @param v
 /// Input value
-#define ae2f_union_cast(tThen, tNow, v) ae2f_add_when_c((union { tThen a; tNow b; }) { v }) ae2f_add_when_cxx(ae2f_union_caster<tThen, tNow>{ v }) .b
+#define ae2f_union_cast(tThen, tNow, v) ae2f_WhenC((union { tThen a; tNow b; }) { v }) ae2f_WhenCXX(ae2f_UnionCaster<tThen, tNow>{ v }) .b
 
 /// @brief
 /// In C, keyword 'struct' must be written in front of the structure's name in order to use as a type name. \n
 /// In C++ that keyword is not required.
 /// 
 /// This keyword resolves the difference of the rules of two.
-#define ae2f_struct ae2f_add_when_c(struct)
+#define ae2f_struct ae2f_WhenC(struct)
 
 /// @brief
 /// Suggests the existence of external variable or function, in naming of C. [non-mangling]
-#define ae2f_extern ae2f_add_when_c(extern) ae2f_add_when_cxx(extern "C")
+#define ae2f_extern ae2f_WhenC(extern) ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Class 
-#define ae2f_class ae2f_add_when_c(struct) ae2f_add_when_cxx(class)
+#define ae2f_class ae2f_WhenC(struct) ae2f_WhenCXX(class)
 
 /// @brief
 /// Makes the global variable in naming of C. [non-mangling]
-#define ae2f_var ae2f_add_when_cxx(extern "C")
+#define ae2f_var ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Function definitions
@@ -1663,20 +1804,20 @@ union ae2f_union_caster {
 #if !defined(ae2f_BitVec_h)
 #define ae2f_BitVec_h
 
-#if !defined(ae2f_Macro_Cast_h)
+#if !defined(ae2f_Cast_h)
 
 /// @brief
 /// asdf
-#define ae2f_Macro_Cast_h
+#define ae2f_Cast_h
 
 /// @brief
 /// ANSI Code for clearing the console.
 /// Clearing all display, moving the cursor on the top.
-#define ae2f_Cast_CCls "\033[2J\033[H"
+#define ae2f_CastCCls "\033[2J\033[H"
 
 /// @brief
 /// simply merge all text inside the round bracket, counting them as a single text block.
-#define ae2f_Cast_Merge(...) __VA_ARGS__
+#define ae2f_CastMerge(...) __VA_ARGS__
 
 
 #if defined(__cplusplus)
@@ -1691,7 +1832,7 @@ union ae2f_union_caster {
 /// @see
 /// @ref ae2f_union_cast
 template<typename t, typename k>
-union ae2f_union_caster {
+union ae2f_UnionCaster {
 	t a;
 	k b;
 };
@@ -1701,43 +1842,43 @@ union ae2f_union_caster {
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...) __VA_ARGS__
+#define ae2f_WhenCXX(...) __VA_ARGS__
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...)
+#define ae2f_WhenC(...)
 
 #else
 
 /// @brief
 /// Appears when the current language is C++.
-#define ae2f_add_when_cxx(...)
+#define ae2f_WhenCXX(...)
 
 /// @brief
 /// Appears when the current language is C.
-#define ae2f_add_when_c(...) __VA_ARGS__
+#define ae2f_WhenC(...) __VA_ARGS__
 
 #endif // defined(__cplusplus)
 
 /// @brief
 /// Initialiser for trivial structures / classes.
-#define ae2f_record_make(type, ...) (ae2f_add_when_c((type) { __VA_ARGS__ }) ae2f_add_when_cxx(type{ __VA_ARGS__ }))
+#define ae2f_RecordMk(type, ...) (ae2f_WhenC((type) { __VA_ARGS__ }) ae2f_WhenCXX(type{ __VA_ARGS__ }))
 
 /// @brief
 /// # static_cast
-#define ae2f_static_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(static_cast<t>(v))
+#define ae2f_static_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(static_cast<t>(v))
 
 /// @brief
 /// # dynamic_cast
-#define ae2f_dynamic_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(dynamic_cast<t>(v))
+#define ae2f_dynamic_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(dynamic_cast<t>(v))
 
 /// @brief
 /// # reinterpret_cast
-#define ae2f_reinterpret_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(reinterpret_cast<t>(v))
+#define ae2f_reinterpret_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(reinterpret_cast<t>(v))
 
 /// @brief
 /// # const_cast
-#define ae2f_const_cast(t, v) ae2f_add_when_c(((t)(v))) ae2f_add_when_cxx(const_cast<t>(v))
+#define ae2f_const_cast(t, v) ae2f_WhenC(((t)(v))) ae2f_WhenCXX(const_cast<t>(v))
 
 /// @brief
 /// Makes a union that reads a memory in two methods. \n
@@ -1750,26 +1891,26 @@ union ae2f_union_caster {
 ///
 /// @param v
 /// Input value
-#define ae2f_union_cast(tThen, tNow, v) ae2f_add_when_c((union { tThen a; tNow b; }) { v }) ae2f_add_when_cxx(ae2f_union_caster<tThen, tNow>{ v }) .b
+#define ae2f_union_cast(tThen, tNow, v) ae2f_WhenC((union { tThen a; tNow b; }) { v }) ae2f_WhenCXX(ae2f_UnionCaster<tThen, tNow>{ v }) .b
 
 /// @brief
 /// In C, keyword 'struct' must be written in front of the structure's name in order to use as a type name. \n
 /// In C++ that keyword is not required.
 /// 
 /// This keyword resolves the difference of the rules of two.
-#define ae2f_struct ae2f_add_when_c(struct)
+#define ae2f_struct ae2f_WhenC(struct)
 
 /// @brief
 /// Suggests the existence of external variable or function, in naming of C. [non-mangling]
-#define ae2f_extern ae2f_add_when_c(extern) ae2f_add_when_cxx(extern "C")
+#define ae2f_extern ae2f_WhenC(extern) ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Class 
-#define ae2f_class ae2f_add_when_c(struct) ae2f_add_when_cxx(class)
+#define ae2f_class ae2f_WhenC(struct) ae2f_WhenCXX(class)
 
 /// @brief
 /// Makes the global variable in naming of C. [non-mangling]
-#define ae2f_var ae2f_add_when_cxx(extern "C")
+#define ae2f_var ae2f_WhenCXX(extern "C")
 
 /// @brief
 /// Function definitions
@@ -1780,21 +1921,54 @@ union ae2f_union_caster {
 #if !defined(ae2f_Cmp_h)
 #define ae2f_Cmp_h
 
+#ifndef ae2f_Cmp_Fun_h
+#define ae2f_Cmp_Fun_h
+
+/// @brief 
+/// A predefined returning data type for @ref ae2f_fpCmp_t.
+/// @see ae2f_CmpFunRet_EQUAL
+/// @see ae2f_CmpFunRet_RISLESSER
+/// @see ae2f_CmpFunRet_LISLESSER
+typedef int ae2f_CmpFunRet_t;
+
+/// @brief
+/// It is an api for following approximate pseudo code.
+/// ```c
+/// *l - *r
+/// ```
+/// @see ae2f_CmpFunRet_t
+typedef ae2f_CmpFunRet_t(*ae2f_fpCmp_t)(const void* l, const void* r);
+
+/// @brief they are same
+/// @see ae2f_CmpFunRet_t 
+#define ae2f_CmpFunRet_EQUAL		0
+
+/// @brief right is lesser
+/// @see ae2f_CmpFunRet_t
+#define ae2f_CmpFunRet_RISLESSER	1
+
+/// @brief left is lesser
+/// @see ae2f_CmpFunRet_t
+#define ae2f_CmpFunRet_LISLESSER	-1
+
+#endif
+
+
 /// @warning
 /// Two parameters must be comparable with operator.
 /// @return
 /// One bigger.
-#define ae2f_Cmp_TakeGt(a, b)		((a) > (b) ? (a) : (b))
+#define ae2f_CmpGetGt(a, b)		((a) > (b) ? (a) : (b))
 
 /// @warning
 /// Two parameters must be comparable with operator.
 /// @return
 /// One smaller.
-#define ae2f_Cmp_TakeLs(a, b)	((a) < (b) ? (a) : (b))
+#define ae2f_CmpGetLs(a, b)	((a) < (b) ? (a) : (b))
 
 /// @return
 /// The absolute different of two.
-#define ae2f_Cmp_Diff(a, b)			(ae2f_Cmp_TakeGt(a, b) - ae2f_Cmp_TakeLs(a, b))
+#define ae2f_CmpDiff(a, b)			(ae2f_CmpGetGt(a, b) - ae2f_CmpGetLs(a, b))
 
 /// @brief
 /// Gets the member from the pointer.
@@ -1802,14 +1976,14 @@ union ae2f_union_caster {
 /// @param ptr The pointer for getting member.
 /// @param member The valid member's name. [from the structure]
 /// @param alter The alternative value when given nullptr.
-#define ae2f_Cmp_TakeMem(ptr, member, alter) ((ptr) ? ((ptr)->member) : (alter))
+#define ae2f_CmpGetMem(ptr, member, alter) ((ptr) ? ((ptr)->member) : (alter))
 
 /// @brief
 /// Returns ptr's self.
 /// Given nullptr, the return will be alt.
 /// @param ptr Self Referring
 /// @param alt The alternative value.
-#define ae2f_Cmp_TakeSelf(ptr, alt) ((ptr) ? (ptr) : (alt))
+#define ae2f_CmpGetSelf(ptr, alt) ((ptr) ? (ptr) : (alt))
 #endif // !defined(ae2f_Macro_Compare_h)
 
 
@@ -1820,11 +1994,11 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @brief Generates the vector filled in `1`.
 /// @param len The length of the filled vector.
 /// @tparam vec_t The integer data type.
-#define _ae2f_BitVec_Filled(len, vec_t) ae2f_static_cast(vec_t, (sizeof(vec_t) << 3) == (len) ? ae2f_static_cast(vec_t, -1) : (ae2f_static_cast(vec_t, ae2f_static_cast(vec_t, 1) << (len)) - 1))
+#define _ae2f_BitVecFilled(len, vec_t) ae2f_static_cast(vec_t, (sizeof(vec_t) << 3) == (len) ? ae2f_static_cast(vec_t, -1) : (ae2f_static_cast(vec_t, ae2f_static_cast(vec_t, 1) << (len)) - 1))
 
 /// @brief Generates the vector filled in `1`.
 /// @param len {ae2f_Macro_BitVecI_t} The length of the filled vector.
-#define ae2f_BitVec_Filled(len) _ae2f_BitVec_Filled(len, size_t)
+#define ae2f_BitVecFilled(len) _ae2f_BitVecFilled(len, size_t)
 
 /// @brief
 /// Gets the bits of [vector] between index of [start] and [end].
@@ -1834,7 +2008,7 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @tparam vec_t The integer data type.
 /// @warning
 /// [start] greater than [end] may cause undefined behaviour.
-#define _ae2f_BitVec_GetRanged(vector, start, end, vec_t) (((vector) >> (start)) & _ae2f_BitVec_Filled((end) - (start), vec_t))
+#define _ae2f_BitVecGetRanged(vector, start, end, vec_t) (((vector) >> (start)) & _ae2f_BitVecFilled((end) - (start), vec_t))
 
 /// @brief
 /// Gets the bits of [vector] between index of [start] and [end]. \n
@@ -1843,14 +2017,14 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @param start {ae2f_Macro_BitVecI_t} The starting index.
 /// @param end {ae2f_Macro_BitVecI_t} The ending index.
 /// @see _ae2f_Macro_BitVec_GetRanged
-#define ae2f_BitVec_GetRanged(vector, start, end) _ae2f_BitVec_GetRanged(vector, ae2f_Cmp_TakeLs(start, end), ae2f_Cmp_TakeGt(start, end), size_t)
+#define ae2f_BitVecGetRanged(vector, start, end) _ae2f_BitVecGetRanged(vector, ae2f_CmpGetLs(start, end), ae2f_CmpGetGt(start, end), size_t)
 
 /// @brief
 /// Gets a bit of [vector] from index of [idx].
 /// @param vector {size_t} The target for operation.
 /// @param idx {ae2f_Macro_BitVecI_t} The wanted index for searching.
 /// @see ae2f_Macro_BitVec_GetRanged
-#define ae2f_BitVec_Get(vector, idx) ae2f_BitVec_GetRanged(vector, idx, (idx) + 1)
+#define ae2f_BitVecGet(vector, idx) ae2f_BitVecGetRanged(vector, idx, (idx) + 1)
 
 /// @brief
 /// Sets the bits of [vector] from index of [start] and [end] by [val].
@@ -1861,7 +2035,7 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @tparam vec_t The integer data type.
 /// @warning
 /// [start] greater than [end] may cause undefined behaviour.
-#define _ae2f_BitVec_SetRanged(vector, start, end, val, vec_t) ((vector) & (~((_ae2f_BitVec_Filled((end) - (start), vec_t)) << start)) | ((val) << start))
+#define _ae2f_BitVecSetRanged(vector, start, end, val, vec_t) ((vector) & (~((_ae2f_BitVecFilled((end) - (start), vec_t)) << start)) | ((val) << start))
 
 /// @brief
 /// Sets the bits of [vector] from index of [start] and [end] by [val]. \n
@@ -1870,14 +2044,14 @@ typedef uint8_t ae2f_BitVecI_t;
 /// @param start {ae2f_Macro_BitVecI_t} The starting index.
 /// @param end {ae2f_Macro_BitVecI_t} The ending index.
 /// @param val {size_t} The value to set.
-#define ae2f_BitVec_SetRanged(vector, start, end, val) _ae2f_BitVec_SetRanged(vector, ae2f_Cmp_TakeLs(start, end), ae2f_Cmp_TakeGt(start, end), (val) & ae2f_BitVec_Filled(ae2f_Cmp_Diff(start, end)), size_t)
+#define ae2f_BitVecSetRanged(vector, start, end, val) _ae2f_BitVecSetRanged(vector, ae2f_CmpGetLs(start, end), ae2f_CmpGetGt(start, end), (val) & ae2f_BitVecFilled(ae2f_CmpDiff(start, end)), size_t)
 
 /// @brief
 /// Sets a bit of [vector] from index of [idx] by [val].
 /// @param vector {size_t} The target for operation.
 /// @param idx {bool} The wanted index for searching.
 /// @see ae2f_Macro_BitVec_GetRanged
-#define ae2f_BitVec_Set(vector, idx, val) ae2f_BitVec_SetRanged(vector, idx, (idx) + 1, val)
+#define ae2f_BitVecSet(vector, idx, val) ae2f_BitVecSetRanged(vector, idx, (idx) + 1, val)
 
 #endif // !defined(ae2f_Macro_BitVector_h)
 
@@ -1891,7 +2065,7 @@ typedef float ae2f_float_t;
 
 /// @brief 
 /// 32 - byte which means has four channels of [r, g, b, a].
-typedef uint32_t ae2f_Bmp_Dot_rgba_t;
+typedef uint32_t ae2f_BmpDotRGBA_t;
 
 #pragma region RGBA get-set
 
@@ -2190,7 +2364,7 @@ ae2f_SHAREDEXPORT ae2f_err_t ae2f_cBmpSrcGDot(
 
 ae2f_SHAREDEXPORT ae2f_err_t ae2f_cBmpSrcRef(
 	ae2f_struct ae2f_cBmpSrc* dest,
-	uint8_t* byte,
+	ae2f_ptrBmpSrcUInt8 byte,
 	size_t byteLength
 ) {
 	if (byteLength < sizeof(struct ae2f_rBmpHeadBF) + sizeof(struct ae2f_rBmpHeadBI)) 
@@ -2220,7 +2394,7 @@ ae2f_SHAREDEXPORT ae2f_err_t ae2f_cBmpSrcFill(
 	for(size_t i = 0; i < ae2f_BmpIdxW(dest->rIdxer); i++)	
 	for(size_t j = 0; j < ae2f_BmpIdxH(dest->rIdxer); j++)
 	for(uint8_t c = 0; c < dest->ElSize; c+=8)
-	dest->Addr[(ae2f_BmpIdxDrive(dest->rIdxer, i, j)) * (dest->ElSize >> 3) + (c >> 3)] = ae2f_BitVec_GetRanged(colour, c, c+8);
+	dest->Addr[(ae2f_BmpIdxDrive(dest->rIdxer, i, j)) * (dest->ElSize >> 3) + (c >> 3)] = ae2f_BitVecGetRanged(colour, c, c+8);
 
 	return ae2f_errGlob_OK;
 }
@@ -2248,7 +2422,7 @@ ae2f_SHAREDEXPORT ae2f_err_t ae2f_cBmpSrcFillPartial(
 	for(size_t i = partial_min_x; i < width && i < partial_max_x; i++)	
 	for(size_t j = partial_min_y; j < height && j < partial_max_y; j++)
 	for(uint8_t c = 0; c < dest->ElSize; c+=8)
-		dest->Addr[(ae2f_BmpIdxDrive(dest->rIdxer, i, j)) * (dest->ElSize >> 3) + (c >> 3)] = ae2f_BitVec_GetRanged(colour, c, c+8);
+		dest->Addr[(ae2f_BmpIdxDrive(dest->rIdxer, i, j)) * (dest->ElSize >> 3) + (c >> 3)] = ae2f_BitVecGetRanged(colour, c, c+8);
 
 	return ae2f_errGlob_OK;
 }
@@ -2489,7 +2663,7 @@ ae2f_SHAREDEXPORT ae2f_err_t ae2f_cBmpSrcCpyPartial(
 
 	__breakloopforx:;
 	}
-	return ae2f_errGlob_OK;  
+	return ae2f_errGlob_OK;
 }
 )"
 
