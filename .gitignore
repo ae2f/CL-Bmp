@@ -13,4 +13,5 @@ _deps
 build/*
 .vscode/*
 
-src/clLib.cl
+src/Programme/a.cl
+src/Programme/*.clh

@@ -6,7 +6,7 @@
 > so it could be utilised under GPU environment.
 
 ## Requirements
-> You need `python` to build this project.
+> You need `python 3` to build this project.
 
 # [OpenCL::OpenCL](https://github.com/KhronosGroup/OpenCL-SDK/releases/tag/v2024.05.08)
 - v2024.05.08

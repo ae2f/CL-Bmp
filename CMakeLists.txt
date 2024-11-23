@@ -3,6 +3,8 @@ project(BmpCL VERSION 1.3.2)
 enable_testing()
 if(NOT TARGET ${PROJECT_NAME})
 
+add_custom_target("${PROJECT_NAME}Config" COMMAND python3 "${PROJECT_SOURCE_DIR}/ConfigMain.py")
+
 option(ae2f_IS_SHARED "Is a shared library or static one." OFF)
 set(ae2f_OpenCL_LIB_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/lib/OpenCL.lib" CACHE STRING "Where library for OpenCL locates.")
 set(ae2f_OpenCL_INCLUDE_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/include/sycl/" CACHE STRING "Where headers for OpenCL headers locate.")
@@ -30,6 +32,8 @@ add_library(
     "src/xProgramme.cpp"
     "src/BmpCL.c"
 )
+
+add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}Config")
 
 include_directories(include)
 add_subdirectory(test)
