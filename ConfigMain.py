@@ -28,5 +28,6 @@ typedef int int32_t;
 
 #define global m_global
 #define ae2f_ptrBmpSrcUInt8 __global uint8_t*
+#define ae2f_Cmp_Fun_h
 """ + src_ret
     F.writelines(pre)
