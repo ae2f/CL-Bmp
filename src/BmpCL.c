@@ -21,8 +21,8 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLMk(
     if(_err == CL_BUILD_SUCCESS) _err = CL_SUCCESS;
     if(_err != CL_SUCCESS) return _err;
 
-    // kers[ae2f_BmpCL_KernI_FILL] = clCreateKernel(LIB, "Fill", &_err);
-    // if(_err != CL_SUCCESS) return _err;
+    kers[ae2f_BmpCL_KernI_FILL] = clCreateKernel(LIB, "ae2f_BmpCLKernFill", &_err);
+    if(_err != CL_SUCCESS) return _err;
 
     return _err;
 }
@@ -38,24 +38,27 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLDel() {
     return err;
 }
 
+#include <ae2f/BmpCL/Buff.h>
+
 ae2f_SHAREDEXPORT cl_int ae2f_BmpCLFill(
-    cl_mem dest, 
+    ae2f_struct ae2f_cBmpCLBuff* dest, 
     cl_command_queue queue,
     uint32_t colour, 
-    size_t pcount
+    uint32_t tcount_w,
+    uint32_t tcount_h
 ) {
     cl_int err = 0;
 
-    err = clSetKernelArg(kers[ae2f_BmpCL_KernI_FILL], 0, sizeof(cl_mem), dest);
+    size_t workcount[2] = { tcount_w, tcount_h };
+
+    err = clSetKernelArg(kers[ae2f_BmpCL_KernI_FILL], 0, sizeof(cl_mem), dest->head);
     if(err != CL_SUCCESS) return err;
     err = clSetKernelArg(kers[ae2f_BmpCL_KernI_FILL], 1, sizeof(uint32_t), &colour);
-    if(err != CL_SUCCESS) return err;
-    err = clSetKernelArg(kers[ae2f_BmpCL_KernI_FILL], 2, sizeof(uint32_t), &pcount);
     if(err != CL_SUCCESS) return err;
 
     err = clEnqueueNDRangeKernel(
         queue, kers[ae2f_BmpCL_KernI_FILL], 
-        1, 0, &pcount, 0, 0, 0, 0
+        2, 0, workcount, 0, 0, 0, 0
     );
     
     return err;

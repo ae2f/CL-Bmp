@@ -4,23 +4,25 @@
 #include <ae2f/Bmp/Src.h>
 #include <CL/cl.h>
 
-ae2f_extern ae2f_SHAREDCALL cl_mem ae2f_cBmpCLBuffMk(
+struct ae2f_cBmpCLBuff {
+    cl_mem head;
+    cl_mem body;
+    ae2f_struct ae2f_cBmpSrc* source;
+};
+
+ae2f_extern ae2f_SHAREDCALL 
+cl_int ae2f_cBmpCLBuffMk(
+    ae2f_struct ae2f_cBmpCLBuff* dest,
     cl_mem_flags flag,
-    const ae2f_struct ae2f_cBmpSrc* src,
+    ae2f_struct ae2f_cBmpSrc* src,
     cl_context ctx,
-    cl_command_queue queue,
-    cl_int* reterr
+    cl_command_queue queue
 );
 
-ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2f_cBmpCLBuffGets(
-    cl_mem src,
-    cl_command_queue queue,
-    ae2f_struct ae2f_cBmpSrc* dest,
-    ae2f_struct ae2f_cBmpSrc* dest_require
-);
 
-#define ae2f_cBmpCLBuffDel clReleaseMemObject
+ae2f_extern ae2f_SHAREDCALL 
+cl_int ae2f_cBmpCLBuffDel(
+    ae2f_struct ae2f_cBmpCLBuff* block
+);
 
 #endif
-
-

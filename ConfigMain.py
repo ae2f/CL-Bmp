@@ -28,7 +28,7 @@ typedef uchar uint8_t;
 typedef int int32_t;
 
 #define global m_global
-#define ae2f_ptrBmpSrcUInt8 __global uint8_t*
+#define ae2f_ptrBmpSrcUInt8 uint8_t*
 #define ae2f_Cmp_Fun_h
 #define ae2f_BmpCLKernDef_h
 """ + src_ret

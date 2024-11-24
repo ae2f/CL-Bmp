@@ -8,6 +8,7 @@ add_custom_target("${PROJECT_NAME}Config" COMMAND python3 "${PROJECT_SOURCE_DIR}
 option(ae2f_IS_SHARED "Is a shared library or static one." OFF)
 set(ae2f_OpenCL_LIB_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/lib/OpenCL.lib" CACHE STRING "Where library for OpenCL locates.")
 set(ae2f_OpenCL_INCLUDE_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/include/sycl/" CACHE STRING "Where headers for OpenCL headers locate.")
+set(ae2f_packcount 4 CACHE STRING "Pack count for pre-defined structures.")
 
 add_subdirectory(mod/ae2f/Bmp)
 link_libraries(Bmp)
@@ -29,6 +30,8 @@ add_library(
     ${PROJECT_NAME}
     ${ae2f_PREFIX_LIB}
     "include/ae2f/BmpCL/Buff.h"
+    "include/ae2f/BmpCL/Dest.h"
+    "include/ae2f/BmpCL/Src.h"
     "src/Buff.c"
     "src/xProgramme.cpp"
     "src/BmpCL.c"

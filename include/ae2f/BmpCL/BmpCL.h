@@ -11,11 +11,14 @@ ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCLMk(
 );
 ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCLDel();
 
+#include "Buff.h"
+
 ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCLFill(
-    cl_mem dest, 
+    ae2f_struct ae2f_cBmpCLBuff* dest,
     cl_command_queue queue,
     uint32_t colour, 
-    size_t pcount
+    uint32_t tcount_w,
+    uint32_t tcount_h
 );
 
 #endif
