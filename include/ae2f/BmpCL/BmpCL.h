@@ -21,4 +21,13 @@ ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCLFill(
     uint32_t tcount_h
 );
 
+ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCLCpy(
+    ae2f_struct ae2f_cBmpCLBuff* dest,
+    ae2f_struct ae2f_cBmpCLBuff* src,
+    const ae2f_struct ae2f_cBmpSrcCpyPrm* prm,
+    cl_command_queue queue,
+    uint32_t tcount_w,
+    uint32_t tcount_h
+);
+
 #endif
