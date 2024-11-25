@@ -20,7 +20,7 @@ static int Test0() {
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
     program = clCreateProgramWithSource(
-        context, ae2f_BmpCL_Programme_COUNT, ae2f_BmpCL_Programme, 0, &err
+        context, 1, &ae2f_BmpCL_Programme, 0, &err
     );
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
@@ -54,10 +54,10 @@ static int Test1() {
     context = clCreateContext(0, 1, &device, 0, 0, &err);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2f_BmpCL_Init(context, 1, &device);
+    err = ae2f_BmpCLMk(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2f_BmpCL_End();
+    err = ae2f_BmpCLDel();
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
     __failure:

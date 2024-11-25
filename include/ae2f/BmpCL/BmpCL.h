@@ -4,18 +4,21 @@
 #include <CL/cl.h>
 #include "Programme.h"
 
-ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCL_Init(
+ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCLMk(
     cl_context context,
     cl_uint clDeviceNumber,
     const cl_device_id* lpDevice
 );
-ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCL_End();
+ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCLDel();
 
-ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCL_Fill(
-    cl_mem dest, 
+#include "Buff.h"
+
+ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCLFill(
+    ae2f_struct ae2f_cBmpCLBuff* dest,
     cl_command_queue queue,
     uint32_t colour, 
-    size_t pcount
+    uint32_t tcount_w,
+    uint32_t tcount_h
 );
 
 #endif
