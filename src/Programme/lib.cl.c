@@ -12,10 +12,18 @@
 #endif
 
 __kernel void ae2f_BmpCLKernFill(
-    __global ae2f_struct ae2f_cBmpSrc* dest,
+    __global ae2f_struct ae2f_cBmpSrc* desthead,
+    ae2f_ptrBmpSrcUInt8 destsrc,
     ae2f_BmpDotRGBA_t colour
 ) {
-    
+    ae2f_struct ae2f_cBmpSrc dest[1];
+    dest->Addr = destsrc;
+    dest->ElSize = desthead->ElSize;
+    dest->rIdxer.Count = desthead->rIdxer.Count;
+    dest->rIdxer.CurrX = desthead->rIdxer.CurrX;
+    dest->rIdxer.IdxXJump = desthead->rIdxer.IdxXJump;
+    dest->rIdxer.Width = desthead->rIdxer.Width;
+
     // global w, h
     const uint32_t 
     w = ae2f_BmpIdxW(dest->rIdxer),
