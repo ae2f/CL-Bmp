@@ -8,21 +8,9 @@ add_custom_target("${PROJECT_NAME}Config" COMMAND python3 "${PROJECT_SOURCE_DIR}
 option(ae2f_IS_SHARED "Is a shared library or static one." OFF)
 set(ae2f_OpenCL_LIB_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/lib/OpenCL.lib" CACHE STRING "Where library for OpenCL locates.")
 set(ae2f_OpenCL_INCLUDE_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/include/sycl/" CACHE STRING "Where headers for OpenCL headers locate.")
-set(ae2f_packcount 4 CACHE STRING "Pack count for pre-defined structures.")
 
 add_subdirectory(mod/ae2f/Bmp)
 link_libraries(Bmp)
-
-find_package(OpenCL)
-if(OpenCL_FOUND)
-    link_libraries(OpenCL::OpenCL)
-    include_directories(${OpenCL_INCLUDE_DIRS})
-else()
-    message("OpenCL::OpenCL not found.")
-    message("Finding it by two variables...")
-    link_libraries(${ae2f_OpenCL_LIB_DIR})
-    include_directories(${ae2f_OpenCL_INCLUDE_DIR})
-endif()
 
 # Namespace Package
 include(GNUInstallDirs)
@@ -32,10 +20,24 @@ add_library(
     "include/ae2f/BmpCL/Buff.h"
     "include/ae2f/BmpCL/Dest.h"
     "include/ae2f/BmpCL/Src.h"
+    "include/ae2f/BmpCL/Programme.h"
+    "include/ae2f/BmpCL/BmpCL.h"
+
     "src/Buff.c"
     "src/xProgramme.cpp"
     "src/BmpCL.c"
 )
+
+find_package(OpenCL)
+if(OpenCL_FOUND)
+    target_link_libraries(${PROJECT_NAME} OpenCL::OpenCL)
+    target_include_directories(${PROJECT_NAME} PUBLIC ${OpenCL_INCLUDE_DIRS})
+else()
+    message("OpenCL::OpenCL not found.")
+    message("Finding it by two variables...")
+    target_link_libraries(${PROJECT_NAME} ${ae2f_OpenCL_LIB_DIR})
+    target_include_directories(${PROJECT_NAME} PUBLIC ${ae2f_OpenCL_INCLUDE_DIRS})
+endif()
 
 add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}Config")
 

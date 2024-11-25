@@ -58,14 +58,23 @@ static int Test0() {
         &src, context, queue
     );
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
-    // err = ae2f_BmpCLFill(&clsrc, queue, 0x50, 5, 5);
-    // printf("Got: %d %d %d\n", clsrc.source->Addr[0], clsrc.source->Addr[1], clsrc.source->Addr[2]);
-
+    err = ae2f_BmpCLFill(&clsrc, queue, 0xFF00FF, 1, 1);
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
 
+    printf(
+        "Got: %d %d %d %d %d %d\n",
+        clsrc.source->Addr[0],
+        clsrc.source->Addr[1],
+        clsrc.source->Addr[2],
+
+        clsrc.source->Addr[3],
+        clsrc.source->Addr[4],
+        clsrc.source->Addr[5]
+    );
+
     fail_after_init:
-    ae2f_BmpCLDel();
     ae2f_cBmpCLBuffDel(&clsrc);
+    ae2f_BmpCLDel();
 
     __failure:
     if(src.Addr) free(src.Addr);
@@ -81,7 +90,6 @@ static int Test0() {
 int MimicTest() {
     int err = 0;
     CHECK_ERR(err = Test0(), 0, __);
-    // CHECK_ERR(err = Test1(), 0, __);
 
     __:
     return err;

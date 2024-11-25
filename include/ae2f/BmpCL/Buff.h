@@ -1,8 +1,8 @@
 #if !defined(ae2f_BmpCL_Buff_h)
 #define ae2f_BmpCL_Buff_h
 
-#include <ae2f/Bmp/Src.h>
 #include <CL/cl.h>
+#include <ae2f/Bmp/Src.h>
 
 struct ae2f_cBmpCLBuff {
     cl_mem head;
