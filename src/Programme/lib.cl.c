@@ -1,10 +1,3 @@
-#include <ae2f/Bmp/Blend.h>
-#include <ae2f/Bmp/Dot.h>
-#include <stdio.h>
-#include <ae2f/Call.h>
-#include <ae2f/Cast.h>
-#include <ae2f/Bmp/Src.h>
-
 #include "../../mod/ae2f/Bmp/src/Src/Double.c"
 
 #ifndef ae2f_BmpCLKernDef_h
@@ -62,10 +55,6 @@ __kernel void ae2f_BmpCLKernCpy(
 	default: return;
 	}
 
-	ae2f_float_t 
-		dotw = (ae2f_BmpIdxW(src->rIdxer) / (ae2f_float_t)srcprm.WidthAsResized), 
-		doth = (ae2f_BmpIdxH(src->rIdxer) / (ae2f_float_t)srcprm.HeightAsResized);
-
     union {
         uint32_t a;
         uint8_t b[4];
@@ -74,18 +63,22 @@ __kernel void ae2f_BmpCLKernCpy(
     uint32_t _x, _y;
     _x = x; _y = y;
 
+	ae2f_float_t 
+		dotw = (ae2f_BmpIdxW(src->rIdxer) / (ae2f_float_t)prm.WidthAsResized), 
+		doth = (ae2f_BmpIdxH(src->rIdxer) / (ae2f_float_t)prm.HeightAsResized);
+
     code = ae2f_cBmpSrcGDot(
         src, &el.a, 
         dotw * _x, 
         doth * _y, 
         dotw * (_x + 1), 
         doth * (_y+1),
-        srcprm.ReverseIdx
+        prm.ReverseIdx
     );
 
     ae2f_float_t 
-    rotatedW = dotw * cos(srcprm.RotateXYCounterClockWise) + doth * sin(srcprm.RotateXYCounterClockWise),
-    rotatedH = doth * cos(srcprm.RotateXYCounterClockWise) - dotw * sin(srcprm.RotateXYCounterClockWise);
+    rotatedW = dotw * cos(prm.RotateXYCounterClockWise) + doth * sin(prm.RotateXYCounterClockWise),
+    rotatedH = doth * cos(prm.RotateXYCounterClockWise) - dotw * sin(prm.RotateXYCounterClockWise);
 
     if(rotatedW < 0) rotatedW = -rotatedW;
     if(rotatedH < 0) rotatedH = -rotatedH;
@@ -94,45 +87,41 @@ __kernel void ae2f_BmpCLKernCpy(
         return;
     }
 
-    if(el.a == srcprm.DataToIgnore) return;
+    if(el.a == prm.DataToIgnore) return;
     
     if(src->ElSize == ae2f_eBmpBitCount_RGB) {
-        el.b[3] = srcprm.Alpha;
+        el.b[3] = prm.Alpha;
     }
 
     ae2f_float_t 
-    _transx = (ae2f_float_t)_x - srcprm.AxisX, 
-    _transy = (ae2f_float_t)_y - srcprm.AxisY,
-    rotatedX = _transx * cos(srcprm.RotateXYCounterClockWise) + _transy * sin(srcprm.RotateXYCounterClockWise) + srcprm.AxisX,
-    rotatedY = _transy * cos(srcprm.RotateXYCounterClockWise) - _transx * sin(srcprm.RotateXYCounterClockWise) + srcprm.AxisY;
+    _transx = (ae2f_float_t)_x - prm.AxisX, 
+    _transy = (ae2f_float_t)_y - prm.AxisY,
+    rotatedX = _transx * cos(prm.RotateXYCounterClockWise) + _transy * sin(prm.RotateXYCounterClockWise) + prm.AxisX,
+    rotatedY = _transy * cos(prm.RotateXYCounterClockWise) - _transx * sin(prm.RotateXYCounterClockWise) + prm.AxisY;
 
-    for(int32_t i = 0; !i || i < rotatedW; i++) 
-    for(int32_t j = 0; !j || j < rotatedH; j++) {
-        #pragma region single dot
-        uint32_t foridx = 
-        ae2f_BmpIdxDrive(
-            dest->rIdxer, (uint32_t)rotatedX + i + srcprm.AddrXForDest, (uint32_t)rotatedY + j + srcprm.AddrYForDest);
-        
-        if(foridx == -1) return;
-        
-        ae2f_ptrBmpSrcUInt8  addr = dest->Addr + (dest->ElSize >> 3) * foridx;
-        switch (k) {
-        default: {
-            addr[k] = ae2f_BmpBlend_imp(
-                el.b[k], 
-                addr[k], 
-                ((ae2f_static_cast(ae2f_float_t, el.b[3])) / 255.0), 
-                uint8_t
-            );
-        } break;
-        case 3: {
-            addr[k] = (ae2f_static_cast(uint16_t, addr[k]) + el.b[k]) >> 1;
-        }
-        }
+    #pragma region single dot
+    uint32_t foridx = 
+    ae2f_BmpIdxDrive(
+        dest->rIdxer, (int32_t)rotatedX + prm.AddrXForDest, (int32_t)rotatedY + prm.AddrYForDest);
+    
+    if(foridx == -1) goto __breakloopforx;
+    ae2f_ptrBmpSrcUInt8 
+        addr = dest->Addr + (dest->ElSize >> 3) * foridx; 
 
-        #pragma endregion
+    switch (k) {
+    default: {
+        addr[k] = ae2f_BmpBlend_imp(
+            el.b[k], 
+            addr[k], 
+            ((ae2f_static_cast(ae2f_float_t, el.b[3])) / 255.0), 
+            uint8_t
+        );
+    } break;
+    case 3: {
+        addr[k] = (ae2f_static_cast(uint16_t, addr[k]) + el.b[k]) >> 1;
+    }
+    #pragma endregion
     }
 
-
-    #undef srcprm
+    __breakloopforx:;
 }
