@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(BmpCL VERSION 1.3.4)
+project(BmpCL VERSION 2.3.4)
 enable_testing()
 if(NOT TARGET ${PROJECT_NAME})
 

@@ -1,5 +1,5 @@
 #include "test.h"
-
+#include <stdio.h>
 int main() {
     int err;
     CHECK_ERR(err = CompileTest(), 0, fail);

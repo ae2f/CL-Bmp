@@ -47,21 +47,58 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLDel() {
 #include <stdio.h>
 
 ae2f_SHAREDEXPORT cl_int ae2f_BmpCLFill(
-    ae2f_struct ae2f_cBmpCLBuff* dest, 
     cl_command_queue queue,
-    ae2f_BmpDotRGBA_t colour, 
-    uint32_t tcount_w,
-    uint32_t tcount_h
+    ae2f_struct ae2f_cBmpCLBuff* dest, 
+    ae2f_BmpDotRGBA_t colour
 ) {
     cl_int err = 0;
-    size_t workcount[2] = { tcount_w, tcount_h };
+    const size_t workcount[2] = { 
+        (dest->source->ElSize * ae2f_BmpIdxW(dest->source->rIdxer) >> 3), 
+        ae2f_BmpIdxH(dest->source->rIdxer)
+    };
+
+    printf("%d %d\n", workcount[0], workcount[1]);
+
     err = clSetKernelArg(kers[ae2f_BmpCLFill_ID], 0, sizeof(cl_mem), &dest->head);
     if(err != CL_SUCCESS) return err;
     err = clSetKernelArg(kers[ae2f_BmpCLFill_ID], 1, sizeof(ae2f_BmpDotRGBA_t), &colour);
     if(err != CL_SUCCESS) return err;
 
+    cl_event kev = 0;
     err = clEnqueueNDRangeKernel(
         queue, kers[ae2f_BmpCLFill_ID],
+        2, 0, workcount, 0, 0, 0, &kev
+    );
+    if(err != CL_SUCCESS) return err;
+
+    err = clEnqueueReadBuffer(
+        queue, dest->body, CL_TRUE, 0,
+        0, dest->source->Addr, 1, &kev, 0
+    );
+    return err;
+}
+
+ae2f_SHAREDEXPORT cl_int ae2f_BmpCLCpy(
+    cl_command_queue queue,
+    ae2f_struct ae2f_cBmpCLBuff* dest,
+    ae2f_struct ae2f_cBmpCLBuff* src,
+    const ae2f_struct ae2f_cBmpSrcCpyPrm* prm
+) {
+    cl_int err = 0;
+    size_t workcount[2] = { 
+        (dest->source->ElSize * ae2f_BmpIdxW(dest->source->rIdxer) >> 3), 
+        ae2f_BmpIdxH(dest->source->rIdxer) 
+    };
+
+    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 0, sizeof(cl_mem), &dest->head);
+    if(err != CL_SUCCESS) return err;
+    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 1, sizeof(cl_mem), &src->head);
+    if(err != CL_SUCCESS) return err;
+    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 2, sizeof(ae2f_struct ae2f_cBmpSrcCpyPrm), prm);
+    if(err != CL_SUCCESS) return err;
+
+    err = clEnqueueNDRangeKernel(
+        queue, kers[ae2f_BmpCLCpy_ID],
         2, 0, workcount, 0, 0, 0, 0
     );
     if(err != CL_SUCCESS) return err;
@@ -70,24 +107,6 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLFill(
         queue, dest->body, CL_TRUE, 0,
         0, dest->source->Addr, 0, 0, 0
     );
+
     return err;
-}
-
-ae2f_SHAREDEXPORT cl_int ae2f_BmpCLCpy(
-    ae2f_struct ae2f_cBmpCLBuff* dest,
-    ae2f_struct ae2f_cBmpCLBuff* src,
-    const ae2f_struct ae2f_cBmpSrcCpyPrm* prm,
-    cl_command_queue queue,
-    uint32_t tcount_w,
-    uint32_t tcount_h
-) {
-    cl_int err = 0;
-    size_t workcount[2] = { tcount_w, tcount_h };
-
-    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 0, sizeof(cl_mem), &dest->head);
-    if(err != CL_SUCCESS) return err;
-    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 1, sizeof(cl_mem), &dest->body);
-    if(err != CL_SUCCESS) return err;
-    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 2, sizeof(ae2f_struct ae2f_cBmpSrcCpyPrm), prm);
-    if(err != CL_SUCCESS) return err;
 }
