@@ -4,6 +4,10 @@
 #include <CL/cl.h>
 #include "Programme.h"
 
+#if !CL_VERSION_3_0
+#define clCreateCommandQueueWithProperties clCreateCommandQueue
+#endif
+
 ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCLMk(
     cl_context context,
     cl_uint clDeviceNumber,

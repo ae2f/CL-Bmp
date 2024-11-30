@@ -1,6 +1,7 @@
 #include "test.h"
 #include <CL/cl.h>
 #include <ae2f/BmpCL/BmpCL.h>
+#include <ae2f/BmpCL/BmpCL.h>
 #include <ae2f/BmpCL/Buff.h>
 #include <ae2f/BmpCL/Src.h>
 #include <stdio.h>
