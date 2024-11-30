@@ -189,9 +189,8 @@ __kernel void ae2f_BmpCLKernCpy(
 	#define srcprm prm
 	ae2f_err_t code;
 
-    const uint32_t wi = get_global_id(0);
     const uint32_t ws = get_global_size(2);
-    const uint32_t x = wi, y = get_global_id(1);
+    const uint32_t x = get_global_id(0), y = get_global_id(1);
     const uint32_t k = get_global_id(2);
 
 	if (!(src && dest && src->Addr && dest->Addr)) {
@@ -253,11 +252,14 @@ __kernel void ae2f_BmpCLKernCpy(
     #pragma region single dot
     uint32_t foridx = 
     ae2f_BmpIdxDrive(
-        dest->rIdxer, (int32_t)rotatedX + prm.AddrXForDest, (int32_t)rotatedY + prm.AddrYForDest);
+        dest->rIdxer, 
+		(int32_t)rotatedX + prm.AddrXForDest, 
+		(int32_t)rotatedY + prm.AddrYForDest
+	);
     
     if(foridx == -1) goto __breakloopforx;
     ae2f_ptrBmpSrcUInt8 
-        addr = dest->Addr + (dest->ElSize >> 3) * foridx; 
+        addr = dest->Addr + (dest->ElSize >> 3) * foridx;
 
     switch (k) {
     default: {

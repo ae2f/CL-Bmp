@@ -51,7 +51,7 @@ static int Test0() {
 
     err = ae2f_cBmpCLBuffMk(
         &clsrc, CL_MEM_READ_WRITE,
-        &src, context, queue
+        &src, context
     );
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
     clock_t a = clock();
@@ -137,13 +137,13 @@ static int Test1() {
 
     err = ae2f_cBmpCLBuffMk(
         &clsrc, CL_MEM_READ_WRITE,
-        &src, context, queue
+        &src, context
     );
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
 
     err = ae2f_cBmpCLBuffMk(
         &cldest, CL_MEM_READ_WRITE,
-        &dest, context, queue
+        &dest, context
     );
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
 
