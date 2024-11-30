@@ -52,9 +52,10 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLFill(
     ae2f_BmpDotRGBA_t colour
 ) {
     cl_int err = 0;
-    const size_t workcount[2] = { 
-        (dest->source->ElSize * ae2f_BmpIdxW(dest->source->rIdxer) >> 3), 
-        ae2f_BmpIdxH(dest->source->rIdxer)
+    const size_t workcount[3] = { 
+        (ae2f_BmpIdxW(dest->source->rIdxer)), 
+        ae2f_BmpIdxH(dest->source->rIdxer),
+        dest->source->ElSize >> 3
     };
 
     err = clSetKernelArg(kers[ae2f_BmpCLFill_ID], 0, sizeof(cl_mem), &dest->head);
@@ -65,7 +66,7 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLFill(
     cl_event kev = 0;
     err = clEnqueueNDRangeKernel(
         queue, kers[ae2f_BmpCLFill_ID],
-        2, 0, workcount, 0, 0, 0, &kev
+        3, 0, workcount, 0, 0, 0, &kev
     );
     if(err != CL_SUCCESS) return err;
 
@@ -83,9 +84,10 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLCpy(
     const ae2f_struct ae2f_cBmpSrcCpyPrm* prm
 ) {
     cl_int err = 0;
-    size_t workcount[2] = { 
-        prm->WidthAsResized * (dest->source->ElSize >> 3),
-        prm->HeightAsResized
+    const size_t workcount[3] = { 
+        prm->WidthAsResized,
+        prm->HeightAsResized,
+        dest->source->ElSize >> 3
     };
 
     err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 0, sizeof(cl_mem), &dest->head);
@@ -99,7 +101,7 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLCpy(
     cl_event kev = 0;
     err = clEnqueueNDRangeKernel(
         queue, kers[ae2f_BmpCLCpy_ID],
-        2, 0, workcount, 0, 0, 0, &kev
+        3, 0, workcount, 0, 0, 0, &kev
     );
     if(err != CL_SUCCESS) return err;
 

@@ -1,4 +1,3 @@
-// #include "../../mod/ae2f/Bmp/src/Src/Double.c"
 #include <ae2f/Bmp/Src.h>
 #include <ae2f/Bmp/Blend.h>
 
@@ -12,6 +11,11 @@
 #define get_global_size(i)  0
 
 #endif
+
+union __colour {
+	uint32_t a;
+	uint8_t b[4];
+};
 
 ae2f_err_t __ae2f_cBmpSrcGDot(
 	__global const ae2f_struct ae2f_cBmpSrc* src,
@@ -157,20 +161,24 @@ ae2f_err_t __ae2f_cBmpSrcGDot(
 	return ae2f_errGlob_OK;
 }
 
+
+
 __kernel void ae2f_BmpCLKernFill(
     __global ae2f_struct ae2f_cBmpSrc* desthead,
-    const uint32_t colour
+    union __colour colour
 ) {
-    switch(desthead->ElSize) {
-        case 24: case 32: break;
+	const uint32_t wi = get_global_id(0), hi = get_global_id(1);
+    const uint8_t ws = get_global_size(2), wsi = get_global_id(2);
+
+    switch(ws) {
+        case 3: case 4: break;
         default: return;
     }
 
-    const uint32_t wi = get_global_id(0), hi = get_global_id(1);
-    const uint32_t ws = (desthead->ElSize >> 3);
-    const uint32_t wi_ = wi / ws;
-    const uint8_t colouridx = ((wi) % ws);
-    desthead->Addr[(ae2f_BmpIdxDrive(desthead->rIdxer, wi_, hi) * ws) + colouridx] = ((uint8_t*)&colour)[colouridx];
+	const uint32_t idx = (ae2f_BmpIdxDrive(desthead->rIdxer, wi, hi));
+	if(idx == ((uint32_t)-1)) return;
+
+    desthead->Addr[(idx * ws) + wsi] = colour.b[wsi];
 }
 
 __kernel void ae2f_BmpCLKernCpy(
@@ -182,10 +190,9 @@ __kernel void ae2f_BmpCLKernCpy(
 	ae2f_err_t code;
 
     const uint32_t wi = get_global_id(0);
-    const uint32_t ws = (dest->ElSize >> 3);
-    const uint32_t x = wi / ws, y = get_global_id(1);
-
-    const uint32_t k = (wi % ws);
+    const uint32_t ws = get_global_size(2);
+    const uint32_t x = wi, y = get_global_id(1);
+    const uint32_t k = get_global_id(2);
 
 	if (!(src && dest && src->Addr && dest->Addr)) {
 		return;
@@ -195,9 +202,9 @@ __kernel void ae2f_BmpCLKernCpy(
 	if (!srcprm.Alpha && src->ElSize != ae2f_eBmpBitCount_RGBA)
 		return;
 
-	switch (dest->ElSize) {
-	case ae2f_eBmpBitCount_RGB:
-	case ae2f_eBmpBitCount_RGBA: break;
+	switch (ws) {
+	case ae2f_eBmpBitCount_RGB >> 3:
+	case ae2f_eBmpBitCount_RGBA >> 3: break;
 	default: return;
 	}
 
@@ -222,12 +229,10 @@ __kernel void ae2f_BmpCLKernCpy(
         prm.ReverseIdx
     );
 
-    ae2f_float_t 
-    rotatedW = dotw * cos(prm.RotateXYCounterClockWise) + doth * sin(prm.RotateXYCounterClockWise),
-    rotatedH = doth * cos(prm.RotateXYCounterClockWise) - dotw * sin(prm.RotateXYCounterClockWise);
-
-    if(rotatedW < 0) rotatedW = -rotatedW;
-    if(rotatedH < 0) rotatedH = -rotatedH;
+	const ae2f_float_t
+	__cos = cos(prm.RotateXYCounterClockWise),
+	__sin = sin(prm.RotateXYCounterClockWise);
+	
 
     if(code != ae2f_errGlob_OK) {
         return;
@@ -242,8 +247,8 @@ __kernel void ae2f_BmpCLKernCpy(
     ae2f_float_t 
     _transx = (ae2f_float_t)_x - prm.AxisX, 
     _transy = (ae2f_float_t)_y - prm.AxisY,
-    rotatedX = _transx * cos(prm.RotateXYCounterClockWise) + _transy * sin(prm.RotateXYCounterClockWise) + prm.AxisX,
-    rotatedY = _transy * cos(prm.RotateXYCounterClockWise) - _transx * sin(prm.RotateXYCounterClockWise) + prm.AxisY;
+    rotatedX = _transx * __cos + _transy * __sin + prm.AxisX,
+    rotatedY = _transy * __cos - _transx * __sin + prm.AxisY;
 
     #pragma region single dot
     uint32_t foridx = 

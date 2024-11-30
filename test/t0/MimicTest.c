@@ -4,11 +4,9 @@
 #include <ae2f/BmpCL/Buff.h>
 #include <ae2f/BmpCL/Src.h>
 #include <stdio.h>
-
 #include <time.h>
-
-
 #include <ae2f/BitVec.h>
+#include <stdlib.h>
 
 #define __w 2000
 #define __h 2000
