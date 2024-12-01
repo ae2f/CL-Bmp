@@ -19,6 +19,7 @@ union __colour {
 
 ae2f_err_t __ae2f_cBmpSrcGDot(
 	__global const ae2f_struct ae2f_cBmpSrc* src,
+	__global uint8_t* srcaddr,
 	uint32_t* retColour,
 	ae2f_float_t _min_x,
 	ae2f_float_t _min_y,
@@ -31,7 +32,7 @@ ae2f_err_t __ae2f_cBmpSrcGDot(
 	xleft = ae2f_BmpIdxW(src->rIdxer), 
 	yleft = ae2f_BmpIdxH(src->rIdxer);
 
-	if(!(src && retColour && src->Addr))
+	if(!(src && retColour && srcaddr))
 	return ae2f_errGlob_PTR_IS_NULL;
 
 	struct {
@@ -113,11 +114,11 @@ ae2f_err_t __ae2f_cBmpSrcGDot(
 	#pragma region Centre
 	for(size_t i = Corner.minx; i < Corner.maxx; i++)
 	for(size_t j = Corner.miny; j < Corner.maxy; j++) {
-		const ae2f_ptrBmpSrcUInt8 const __src = src->Addr + ae2f_BmpIdxDrive(src->rIdxer, i, j) * (src->ElSize >> 3);
+		const ae2f_ptrBmpSrcUInt8 const __src = srcaddr + ae2f_BmpIdxDrive(src->rIdxer, i, j) * (src->ElSize >> 3);
 
 		// invalid index check
 		// index validation
-		if(__src + 1 == src->Addr) continue;
+		if(__src + 1 == srcaddr) continue;
 
 		switch(src->ElSize) {
 			case ae2f_eBmpBitCount_RGB: {
@@ -164,7 +165,8 @@ ae2f_err_t __ae2f_cBmpSrcGDot(
 
 
 __kernel void ae2f_BmpCLKernFill(
-    __global ae2f_struct ae2f_cBmpSrc* desthead,
+    const __global ae2f_struct ae2f_cBmpSrc* desthead,
+	__global uint8_t* addr,
     union __colour colour
 ) {
 	const uint32_t wi = get_global_id(0), hi = get_global_id(1);
@@ -178,12 +180,14 @@ __kernel void ae2f_BmpCLKernFill(
 	const uint32_t idx = (ae2f_BmpIdxDrive(desthead->rIdxer, wi, hi));
 	if(idx == ((uint32_t)-1)) return;
 
-    desthead->Addr[(idx * ws) + wsi] = colour.b[wsi];
+    addr[(idx * ws) + wsi] = colour.b[wsi];
 }
 
 __kernel void ae2f_BmpCLKernCpy(
-    __global ae2f_struct ae2f_cBmpSrc* dest,
-    __global ae2f_struct ae2f_cBmpSrc* src,
+    const __global ae2f_struct ae2f_cBmpSrc* dest,
+	__global uint8_t* destaddr,
+    const __global ae2f_struct ae2f_cBmpSrc* src,
+	__global uint8_t* srcaddr,
     ae2f_struct ae2f_cBmpSrcCpyPrm prm
 ) {
 	#define srcprm prm
@@ -220,7 +224,8 @@ __kernel void ae2f_BmpCLKernCpy(
 		doth = (ae2f_BmpIdxH(src->rIdxer) / (ae2f_float_t)prm.HeightAsResized);
 
     code = __ae2f_cBmpSrcGDot(
-        src, &el.a, 
+        src, srcaddr, 
+		&el.a, 
         dotw * _x, 
         doth * _y, 
         dotw * (_x + 1), 
@@ -259,7 +264,7 @@ __kernel void ae2f_BmpCLKernCpy(
     
     if(foridx == -1) goto __breakloopforx;
     ae2f_ptrBmpSrcUInt8 
-        addr = dest->Addr + (dest->ElSize >> 3) * foridx;
+        addr = destaddr + (dest->ElSize >> 3) * foridx;
 
     switch (k) {
     default: {

@@ -60,7 +60,9 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLFill(
 
     err = clSetKernelArg(kers[ae2f_BmpCLFill_ID], 0, sizeof(cl_mem), &dest->head);
     if(err != CL_SUCCESS) return err;
-    err = clSetKernelArg(kers[ae2f_BmpCLFill_ID], 1, sizeof(ae2f_BmpDotRGBA_t), &colour);
+    err = clSetKernelArg(kers[ae2f_BmpCLFill_ID], 1, sizeof(cl_mem), &dest->body);
+    if(err != CL_SUCCESS) return err;
+    err = clSetKernelArg(kers[ae2f_BmpCLFill_ID], 2, sizeof(ae2f_BmpDotRGBA_t), &colour);
     if(err != CL_SUCCESS) return err;
 
     cl_event kev = 0;
@@ -92,9 +94,13 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLCpy(
 
     err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 0, sizeof(cl_mem), &dest->head);
     if(err != CL_SUCCESS) return err;
-    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 1, sizeof(cl_mem), &src->head);
+    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 1, sizeof(cl_mem), &dest->body);
     if(err != CL_SUCCESS) return err;
-    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 2, sizeof(ae2f_struct ae2f_cBmpSrcCpyPrm), prm);
+    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 2, sizeof(cl_mem), &src->head);
+    if(err != CL_SUCCESS) return err;
+    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 3, sizeof(cl_mem), &src->body);
+    if(err != CL_SUCCESS) return err;
+    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 4, sizeof(ae2f_struct ae2f_cBmpSrcCpyPrm), prm);
     if(err != CL_SUCCESS) return err;
 
 
