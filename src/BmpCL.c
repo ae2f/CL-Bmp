@@ -113,7 +113,7 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLCpy(
 
     err = clEnqueueReadBuffer(
         queue, dest->body, CL_TRUE, 0,
-        0, dest->source->Addr, 1, &kev, 0
+        workcount[0] * workcount[1] * workcount[2], dest->source->Addr, 1, &kev, 0
     );
 
     return err;
