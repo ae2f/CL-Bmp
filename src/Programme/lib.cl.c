@@ -18,8 +18,8 @@ union __colour {
 };
 
 ae2f_err_t __ae2f_cBmpSrcGDot(
-	__global const ae2f_struct ae2f_cBmpSrc* src,
-	__global uint8_t* srcaddr,
+	const __global ae2f_struct ae2f_cBmpSrc* src,
+	const __global uint8_t* srcaddr,
 	uint32_t* retColour,
 	ae2f_float_t _min_x,
 	ae2f_float_t _min_y,
@@ -162,8 +162,6 @@ ae2f_err_t __ae2f_cBmpSrcGDot(
 	return ae2f_errGlob_OK;
 }
 
-
-
 __kernel void ae2f_BmpCLKernFill(
     const __global ae2f_struct ae2f_cBmpSrc* desthead,
 	__global uint8_t* addr,
@@ -187,14 +185,17 @@ __kernel void ae2f_BmpCLKernCpy(
     const __global ae2f_struct ae2f_cBmpSrc* dest,
 	__global uint8_t* destaddr,
     const __global ae2f_struct ae2f_cBmpSrc* src,
-	__global uint8_t* srcaddr,
+	const __global uint8_t* srcaddr,
     ae2f_struct ae2f_cBmpSrcCpyPrm prm
 ) {
 	#define srcprm prm
 	ae2f_err_t code;
 
     const uint32_t ws = get_global_size(2);
-    const uint32_t x = get_global_id(0), y = get_global_id(1);
+    const uint32_t 
+	x = get_global_id(0), 
+	y = get_global_id(1);
+
     const uint32_t k = get_global_id(2);
 
 	if (!(src && dest && src->Addr && dest->Addr)) {
@@ -269,8 +270,7 @@ __kernel void ae2f_BmpCLKernCpy(
     switch (k) {
     default: {
         addr[k] = ae2f_BmpBlend_imp(
-            el.b[k], 
-            addr[k], 
+            el.b[k], addr[k],
             ((ae2f_static_cast(ae2f_float_t, el.b[3])) / 255.0), 
             uint8_t
         );

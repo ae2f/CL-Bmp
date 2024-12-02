@@ -11,8 +11,17 @@ ae2f_SHAREDEXPORT cl_int ae2f_cBmpCLBuffMk(
     if(src->rIdxer.Width != src->rIdxer.IdxXJump) return 1;
 
     cl_int err = CL_SUCCESS;
-    dest->body = clCreateBuffer(ctx, flag | CL_MEM_USE_HOST_PTR, ((size_t)(src->rIdxer.Count * src->ElSize)) >> 3, src->Addr, &err);
-    dest->head = clCreateBuffer(ctx, flag | CL_MEM_USE_HOST_PTR, sizeof(struct ae2f_cBmpSrc), src, &err);
+    dest->body = clCreateBuffer(
+        ctx, flag | CL_MEM_USE_HOST_PTR, 
+        ((size_t)(src->rIdxer.Count * src->ElSize)) >> 3, 
+        src->Addr, &err
+    );
+    
+    dest->head = clCreateBuffer(
+        ctx, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
+        sizeof(struct ae2f_cBmpSrc), src, &err
+    );
+
     dest->source = src;
     return err;
 }
