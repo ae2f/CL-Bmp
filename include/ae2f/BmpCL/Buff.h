@@ -15,8 +15,7 @@ cl_int ae2f_cBmpCLBuffMk(
     ae2f_struct ae2f_cBmpCLBuff* dest,
     cl_mem_flags flag,
     ae2f_struct ae2f_cBmpSrc* src,
-    cl_context ctx,
-    cl_command_queue queue
+    cl_context ctx
 );
 
 
