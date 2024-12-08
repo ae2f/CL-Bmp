@@ -3,7 +3,7 @@
 static cl_program LIB = 0;
 
 #define ae2f_BmpCLFill_ID 0
-#define ae2f_BmpCLCpy_ID 1
+#define ae2fCL_BmpRectCpy_ID 1
 
 static cl_kernel kers[] = {
     0, 0
@@ -25,7 +25,7 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLMk(
     kers[ae2f_BmpCLFill_ID] = clCreateKernel(LIB, "ae2f_BmpCLKernFill", &_err);
     if(_err != CL_SUCCESS) return _err;
 
-    kers[ae2f_BmpCLCpy_ID] = clCreateKernel(LIB, "ae2f_BmpCLKernCpy", &_err);
+    kers[ae2fCL_BmpRectCpy_ID] = clCreateKernel(LIB, "ae2f_BmpCLKernCpy", &_err);
     if(_err != CL_SUCCESS) return _err;
 
     return _err;
@@ -79,34 +79,36 @@ ae2f_SHAREDEXPORT cl_int ae2f_BmpCLFill(
     return err;
 }
 
-ae2f_SHAREDEXPORT cl_int ae2f_BmpCLCpy(
+#include <ae2f/Bmp/Src/Rect.h>
+
+ae2f_SHAREDEXPORT cl_int ae2fCL_BmpRectCpy(
     cl_command_queue queue,
     ae2f_struct ae2f_cBmpCLBuff* dest,
     ae2f_struct ae2f_cBmpCLBuff* src,
-    const ae2f_struct ae2f_cBmpSrcCpyPrm* prm
+    const ae2f_struct ae2f_cBmpSrcRectCpyPrm* prm
 ) {
     cl_int err = 0;
     const size_t workcount[3] = { 
-        prm->WidthAsResized,
-        prm->HeightAsResized,
+        prm->Resz.x,
+        prm->Resz.y,
         dest->source->ElSize >> 3
     };
 
-    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 0, sizeof(cl_mem), &dest->head);
+    err = clSetKernelArg(kers[ae2fCL_BmpRectCpy_ID], 0, sizeof(cl_mem), &dest->head);
     if(err != CL_SUCCESS) return err;
-    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 1, sizeof(cl_mem), &dest->body);
+    err = clSetKernelArg(kers[ae2fCL_BmpRectCpy_ID], 1, sizeof(cl_mem), &dest->body);
     if(err != CL_SUCCESS) return err;
-    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 2, sizeof(cl_mem), &src->head);
+    err = clSetKernelArg(kers[ae2fCL_BmpRectCpy_ID], 2, sizeof(cl_mem), &src->head);
     if(err != CL_SUCCESS) return err;
-    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 3, sizeof(cl_mem), &src->body);
+    err = clSetKernelArg(kers[ae2fCL_BmpRectCpy_ID], 3, sizeof(cl_mem), &src->body);
     if(err != CL_SUCCESS) return err;
-    err = clSetKernelArg(kers[ae2f_BmpCLCpy_ID], 4, sizeof(ae2f_struct ae2f_cBmpSrcCpyPrm), prm);
+    err = clSetKernelArg(kers[ae2fCL_BmpRectCpy_ID], 4, sizeof(ae2f_struct ae2f_cBmpSrcRectCpyPrm), prm);
     if(err != CL_SUCCESS) return err;
 
 
     cl_event kev = 0;
     err = clEnqueueNDRangeKernel(
-        queue, kers[ae2f_BmpCLCpy_ID],
+        queue, kers[ae2fCL_BmpRectCpy_ID],
         3, 0, workcount, 0, 0, 0, &kev
     );
     if(err != CL_SUCCESS) return err;

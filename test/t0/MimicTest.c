@@ -150,19 +150,19 @@ static int Test1() {
     clock_t a = clock();
     clock_t b = clock();
     err = ae2f_BmpCLFill(queue, &clsrc, 0xFF00FF);
-    ae2f_struct ae2f_cBmpSrcCpyPrm prm = {
-        .AddrXForDest = 0,
-        .AddrYForDest = 0,
+    ae2f_struct ae2f_cBmpSrcRectCpyPrm prm = {
+        .AddrDest.x = 0,
+        .AddrDest.y = 0,
         .Alpha = 255,
-        .AxisX = 0,
-        .AxisY = 0,
+        .Axis.x = 0,
+        .Axis.y = 0,
         .DataToIgnore = 2,
-        .HeightAsResized = __h,
-        .WidthAsResized = __w,
+        .Resz.y = __h,
+        .Resz.x = __w,
         .ReverseIdx = 0,
         .RotateXYCounterClockWise = 0
     };
-    err = ae2f_BmpCLCpy(queue, &cldest, &clsrc, &prm);
+    err = ae2fCL_BmpRectCpy(queue, &cldest, &clsrc, &prm);
     printf("%d\n", b - a);
     a = b;
     printf(

@@ -1,5 +1,4 @@
-link_libraries(BmpCL)
-project(BmpCLTest)
+project(CL-BmpTest)
 
 add_executable(
     ${PROJECT_NAME}

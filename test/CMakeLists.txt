@@ -1,3 +1,3 @@
-link_libraries(BmpCL)
+link_libraries(CL-Bmp)
 
 add_subdirectory(t0)

@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
-project(BmpCL VERSION 2.5.6)
+project(CL-Bmp VERSION 3.5.6)
 enable_testing()
 if(NOT TARGET ${PROJECT_NAME})
-
-add_custom_target("${PROJECT_NAME}Config" COMMAND python3 "${PROJECT_SOURCE_DIR}/ConfigMain.py")
 
 option(ae2f_IS_SHARED "Is a shared library or static one." OFF)
 set(ae2f_OpenCL_LIB_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/lib/OpenCL.lib" CACHE STRING "Where library for OpenCL locates.")
@@ -11,6 +9,14 @@ set(ae2f_OpenCL_INCLUDE_DIR "C:/Program Files (x86)/Intel/oneAPI/2025.0/include/
 
 add_subdirectory(mod/ae2f/Bmp)
 link_libraries(Bmp)
+
+add_subdirectory(mod/ae2fCL/Core)
+link_libraries(CL-Core)
+
+ae2fCL_AppendInclude(${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/include)
+ae2fCL_AppendInclude(${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/mod/ae2f/mov2/include)
+ae2fCL_AppendInclude(${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/mod/ae2f/mov2/mod/ae2f/mov/include)
+ae2fCL_AppendInclude(${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/mod/ae2f/mov2/mod/ae2f/mov/mod/ae2f/Core/include)
 
 # Namespace Package
 include(GNUInstallDirs)
@@ -24,26 +30,14 @@ add_library(
     "include/ae2f/BmpCL/BmpCL.h"
 
     "src/Buff.c"
-    "src/xProgramme.cpp"
+    "src/Programme.c"
     "src/BmpCL.c"
 )
 
-find_package(OpenCL)
-if(OpenCL_FOUND)
-    target_link_libraries(${PROJECT_NAME} OpenCL::OpenCL)
-    target_include_directories(${PROJECT_NAME} PUBLIC ${OpenCL_INCLUDE_DIRS})
-else()
-    message("OpenCL::OpenCL not found.")
-    message("Finding it by two variables...")
-    target_link_libraries(${PROJECT_NAME} ${ae2f_OpenCL_LIB_DIR})
-    target_include_directories(${PROJECT_NAME} PUBLIC ${ae2f_OpenCL_INCLUDE_DIRS})
-endif()
-
-add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}Config")
+ae2fCL_AddConfProjTarDep(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src)
 
 include_directories(include)
 add_subdirectory(test)
-
 
 # Header
 target_include_directories(${PROJECT_NAME}

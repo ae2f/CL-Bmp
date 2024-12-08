@@ -23,11 +23,13 @@ ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCLFill(
     uint32_t colour
 );
 
-ae2f_extern ae2f_SHAREDCALL cl_int ae2f_BmpCLCpy(
+#include <ae2f/Bmp/Src/Rect.h>
+
+ae2f_extern ae2f_SHAREDCALL cl_int ae2fCL_BmpRectCpy(
     cl_command_queue queue,
     ae2f_struct ae2f_cBmpCLBuff* dest,
     ae2f_struct ae2f_cBmpCLBuff* src,
-    const ae2f_struct ae2f_cBmpSrcCpyPrm* prm
+    const ae2f_struct ae2f_cBmpSrcRectCpyPrm* prm
 );
 
 #endif
