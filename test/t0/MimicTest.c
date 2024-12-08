@@ -1,9 +1,8 @@
 #include "test.h"
 #include <CL/cl.h>
-#include <ae2f/BmpCL/BmpCL.h>
-#include <ae2f/BmpCL/BmpCL.h>
-#include <ae2f/BmpCL/Buff.h>
-#include <ae2f/BmpCL/Src.h>
+#include <ae2fCL/Bmp/Bmp.h>
+#include <ae2fCL/Bmp/Buff.h>
+#include <ae2fCL/Bmp/Src.h>
 #include <stdio.h>
 #include <time.h>
 #include <ae2f/BitVec.h>
@@ -33,7 +32,7 @@ static int Test0() {
         .Addr = calloc(__w * __h, 3)
     };
 
-    ae2f_struct ae2f_cBmpCLBuff clsrc;
+    ae2f_struct ae2fCL_cBmpBuff clsrc;
 
     err = clGetPlatformIDs(1, &platform, 0);
     CHECK_ERR(err, CL_SUCCESS, __failure);
@@ -46,17 +45,17 @@ static int Test0() {
     queue = clCreateCommandQueueWithProperties(context, device, 0, &err);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2f_BmpCLMk(context, 1, &device);
+    err = ae2fCL_BmpMk(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2f_cBmpCLBuffMk(
+    err = ae2fCL_cBmpBuffMk(
         &clsrc, CL_MEM_READ_WRITE,
         &src, context
     );
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
     clock_t a = clock();
     clock_t b = clock();
-    err = ae2f_BmpCLFill(queue, &clsrc, 0xFF00FF);
+    err = ae2fCL_BmpFill(queue, &clsrc, 0xFF00FF);
     printf("%d\n", b - a);
     a = b;
     printf(
@@ -73,8 +72,8 @@ static int Test0() {
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
 
     fail_after_init:
-    ae2f_cBmpCLBuffDel(&clsrc);
-    ae2f_BmpCLDel();
+    ae2fCL_cBmpBuffDel(&clsrc);
+    ae2fCL_BmpDel();
 
     __failure:
     if(src.Addr) free(src.Addr);
@@ -119,7 +118,7 @@ static int Test1() {
         .Addr = calloc(__w * __h, 3)
     };
 
-    ae2f_struct ae2f_cBmpCLBuff clsrc, cldest;
+    ae2f_struct ae2fCL_cBmpBuff clsrc, cldest;
 
     err = clGetPlatformIDs(1, &platform, 0);
     CHECK_ERR(err, CL_SUCCESS, __failure);
@@ -132,16 +131,16 @@ static int Test1() {
     queue = clCreateCommandQueueWithProperties(context, device, 0, &err);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2f_BmpCLMk(context, 1, &device);
+    err = ae2fCL_BmpMk(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2f_cBmpCLBuffMk(
+    err = ae2fCL_cBmpBuffMk(
         &clsrc, CL_MEM_READ_WRITE,
         &src, context
     );
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
 
-    err = ae2f_cBmpCLBuffMk(
+    err = ae2fCL_cBmpBuffMk(
         &cldest, CL_MEM_READ_WRITE,
         &dest, context
     );
@@ -149,7 +148,7 @@ static int Test1() {
 
     clock_t a = clock();
     clock_t b = clock();
-    err = ae2f_BmpCLFill(queue, &clsrc, 0xFF00FF);
+    err = ae2fCL_BmpFill(queue, &clsrc, 0xFF00FF);
     ae2f_struct ae2f_cBmpSrcRectCpyPrm prm = {
         .AddrDest.x = 0,
         .AddrDest.y = 0,
@@ -179,8 +178,8 @@ static int Test1() {
     CHECK_ERR(err, CL_SUCCESS, fail_after_init);
 
     fail_after_init:
-    ae2f_cBmpCLBuffDel(&clsrc);
-    ae2f_BmpCLDel();
+    ae2fCL_cBmpBuffDel(&clsrc);
+    ae2fCL_BmpDel();
 
     __failure:
     if(src.Addr) free(src.Addr);

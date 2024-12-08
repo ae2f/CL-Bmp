@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(CL-Bmp VERSION 3.5.6)
+project(CL-Bmp VERSION 4.5.6)
 enable_testing()
 if(NOT TARGET ${PROJECT_NAME})
 
@@ -23,11 +23,11 @@ include(GNUInstallDirs)
 add_library(
     ${PROJECT_NAME}
     ${ae2f_PREFIX_LIB}
-    "include/ae2f/BmpCL/Buff.h"
-    "include/ae2f/BmpCL/Dest.h"
-    "include/ae2f/BmpCL/Src.h"
-    "include/ae2f/BmpCL/Programme.h"
-    "include/ae2f/BmpCL/BmpCL.h"
+    "include/ae2fCL/Bmp/Buff.h"
+    "include/ae2fCL/Bmp/Dest.h"
+    "include/ae2fCL/Bmp/Src.h"
+    "include/ae2fCL/Bmp/Programme.h"
+    "include/ae2fCL/Bmp/Bmp.h"
 
     "src/Buff.c"
     "src/Programme.c"

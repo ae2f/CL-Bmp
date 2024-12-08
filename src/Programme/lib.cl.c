@@ -155,7 +155,7 @@ ae2f_err_t __ae2f_cBmpSrcGDot(
 	return ae2f_errGlob_OK;
 }
 
-__kernel void ae2f_BmpCLKernFill(
+__kernel void ae2fCL_BmpKernFill(
     const __global ae2f_struct ae2f_cBmpSrc* desthead,
 	__global uint8_t* addr,
     union __colour colour
@@ -174,7 +174,7 @@ __kernel void ae2f_BmpCLKernFill(
     addr[(idx * ws) + wsi] = colour.b[wsi];
 }
 
-__kernel void ae2f_BmpCLKernCpy(
+__kernel void ae2fCL_BmpKernCpy(
     const __global ae2f_struct ae2f_cBmpSrc* dest,
 	__global uint8_t* destaddr,
     const __global ae2f_struct ae2f_cBmpSrc* src,

@@ -1,7 +1,7 @@
-#include <ae2f/BmpCL/Buff.h>
+#include <ae2fCL/Bmp/Buff.h>
 
-ae2f_SHAREDEXPORT cl_int ae2f_cBmpCLBuffMk(
-    ae2f_struct ae2f_cBmpCLBuff* dest,
+ae2f_SHAREDEXPORT cl_int ae2fCL_cBmpBuffMk(
+    ae2f_struct ae2fCL_cBmpBuff* dest,
     cl_mem_flags flag,
     ae2f_struct ae2f_cBmpSrc* src,
     cl_context ctx
@@ -26,8 +26,8 @@ ae2f_SHAREDEXPORT cl_int ae2f_cBmpCLBuffMk(
     return err;
 }
 
-ae2f_SHAREDEXPORT cl_int ae2f_cBmpCLBuffDel(
-    ae2f_struct ae2f_cBmpCLBuff* dest
+ae2f_SHAREDEXPORT cl_int ae2fCL_cBmpBuffDel(
+    ae2f_struct ae2fCL_cBmpBuff* dest
 ) {
     cl_int a = 0;
     a = clReleaseMemObject(dest->body);
