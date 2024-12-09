@@ -16,7 +16,11 @@ ae2f_SHAREDEXPORT cl_int ae2fCL_BmpMk(
 ) {
     cl_int _err = CL_SUCCESS;
 
-    LIB = clCreateProgramWithSource(context, 1, &ae2fCL_Bmp_Programme, 0, &_err);
+    static const char* source =
+    #include "Programme/lib.clh"
+    ;
+
+    LIB = clCreateProgramWithSource(context, 1, &source, 0, &_err);
     if(_err != CL_SUCCESS) return _err;
     _err = clBuildProgram(LIB, clDeviceNumber, lpDevice, 0, 0, 0);
     if(_err == CL_BUILD_SUCCESS) _err = CL_SUCCESS;

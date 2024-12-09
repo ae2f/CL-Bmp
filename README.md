@@ -1,13 +1,16 @@
-# ae2fCL_Bmp
+# ae2fCL::Bmp
 - Rel-v4.5.7
 > This project is not commenced yet.
 
 > It helps building the OpenCL kernel code version of `ae2f_Bmp`,
 > so it could be utilised under GPU environment.
 
-## Requirements
-> You need `python 3` to build this project.
-
-# [OpenCL::OpenCL](https://github.com/KhronosGroup/OpenCL-SDK/releases/tag/v2024.05.08)
-- v2024.05.08
-> Helps copying run on GPU.
+# Dependency
+- gcc
+- cmake
+- make
+- ae2f::Core
+- OpenCL
+- python3
+- ae2fCL::Core
+- ae2f::Bmp

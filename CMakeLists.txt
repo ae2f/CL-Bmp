@@ -30,8 +30,7 @@ add_library(
     "include/ae2fCL/Bmp/Bmp.h"
 
     "src/Buff.c"
-    "src/Programme.c"
-    "src/BmpCL.c"
+    "src/Bmp.c"
 )
 
 ae2fCL_AddConfProjTarDep(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src)
