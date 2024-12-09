@@ -83,7 +83,7 @@ ae2f_SHAREDEXPORT cl_int ae2fCL_BmpFill(
     return err;
 }
 
-#include <ae2f/Bmp/Src/Rect.h>
+#include <ae2fCL/Bmp/Rect.h>
 
 ae2f_SHAREDEXPORT cl_int ae2fCL_BmpRectCpy(
     cl_command_queue queue,

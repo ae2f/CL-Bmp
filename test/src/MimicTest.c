@@ -1,6 +1,5 @@
-#include "test.h"
-#include <CL/cl.h>
-#include <ae2fCL/Bmp/Bmp.h>
+#include "../test.h"
+#include <ae2fCL/Bmp/Rect.h>
 #include <ae2fCL/Bmp/Buff.h>
 #include <ae2fCL/Bmp/Src.h>
 #include <stdio.h>
@@ -192,7 +191,7 @@ static int Test1() {
     return err;
 }
 
-int MimicTest() {
+int main() {
     int err = 0;
     CHECK_ERR(err = Test0(), 0, __);
     CHECK_ERR(err = Test1(), 0, __);

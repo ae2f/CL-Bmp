@@ -2,7 +2,7 @@
 #define ae2fCL_Bmp_Bmp_h
 
 #include <CL/cl.h>
-#include "Programme.h"
+#include "Buff.h"
 
 #if !CL_VERSION_3_0
 #define clCreateCommandQueueWithProperties clCreateCommandQueue
@@ -15,21 +15,10 @@ ae2f_extern ae2f_SHAREDCALL cl_int ae2fCL_BmpMk(
 );
 ae2f_extern ae2f_SHAREDCALL cl_int ae2fCL_BmpDel();
 
-#include "Buff.h"
-
 ae2f_extern ae2f_SHAREDCALL cl_int ae2fCL_BmpFill(
     cl_command_queue queue,
     ae2f_struct ae2fCL_cBmpBuff* dest,
     uint32_t colour
-);
-
-#include <ae2f/Bmp/Src/Rect.h>
-
-ae2f_extern ae2f_SHAREDCALL cl_int ae2fCL_BmpRectCpy(
-    cl_command_queue queue,
-    ae2f_struct ae2fCL_cBmpBuff* dest,
-    ae2f_struct ae2fCL_cBmpBuff* src,
-    const ae2f_struct ae2f_cBmpSrcRectCpyPrm* prm
 );
 
 #endif
