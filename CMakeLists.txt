@@ -6,7 +6,7 @@ if(NOT TARGET ${PROJECT_NAME})
 add_subdirectory(mod/ae2f/Bmp)
 add_subdirectory(mod/ae2fCL/Core)
 
-ae2fCL_AppendInclude(
+ae2fCL_CoreAppendInclude(
     ${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/include
     ${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/mod/ae2f/mov2/include
     ${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/mod/ae2f/mov2/mod/ae2f/mov/include
@@ -15,7 +15,7 @@ ae2fCL_AppendInclude(
 
 # Namespace Package
 include(GNUInstallDirs)
-ae2f_CoreLibProjTent(
+ae2f_CoreLibTent(
     ${PROJECT_NAME} ${ae2f_PREFIX_LIB} 
     include
     "include/ae2fCL/Bmp/Buff.h"
@@ -29,7 +29,7 @@ ae2f_CoreLibProjTent(
 target_link_libraries(${PROJECT_NAME} INTERFACE CL-Core)
 target_link_libraries(${PROJECT_NAME} PUBLIC Bmp)
 
-ae2fCL_AddConfProjTarDep(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src)
+ae2fCL_CoreAddConfProjTarDep(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src)
 ae2f_CoreTestTent(${PROJECT_NAME} test/src)
 
 include_directories(include)
