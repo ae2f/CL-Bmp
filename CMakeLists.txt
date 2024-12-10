@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
-project(CL-Bmp VERSION 4.7.9)
+project(CL-Bmp VERSION 4.7.10)
 enable_testing()
 if(NOT TARGET ${PROJECT_NAME})
 
-add_subdirectory(mod/ae2fCL/Core)
 add_subdirectory(mod/ae2f/Bmp)
+add_subdirectory(mod/ae2fCL/Core)
 
 ae2fCL_CoreAppendInclude(
     ${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/include
