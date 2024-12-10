@@ -1,5 +1,5 @@
 # ae2fCL::Bmp
-- Rel-v4.7.7
+- Rel-v4.7.8
 > This project is not commenced yet.
 
 > It helps building the OpenCL kernel code version of `ae2f_Bmp`,

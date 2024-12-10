@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
-project(CL-Bmp VERSION 4.7.7)
+project(CL-Bmp VERSION 4.7.8)
 enable_testing()
 if(NOT TARGET ${PROJECT_NAME})
 
-add_subdirectory(mod/ae2f/Bmp)
 add_subdirectory(mod/ae2fCL/Core)
+add_subdirectory(mod/ae2f/Bmp)
 
 ae2fCL_CoreAppendInclude(
     ${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/include
@@ -13,10 +13,8 @@ ae2fCL_CoreAppendInclude(
     ${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/mod/ae2f/mov2/mod/ae2f/mov/mod/ae2f/Core/include
 )
 
-# Namespace Package
-include(GNUInstallDirs)
 ae2f_CoreLibTent(
-    ${PROJECT_NAME} ${ae2f_PREFIX_LIB} 
+    ${PROJECT_NAME} ${ae2f_LIBPREFIX}
     include ae2fCL
     "include/ae2fCL/Bmp/Buff.h"
     "include/ae2fCL/Bmp/Dest.h"
