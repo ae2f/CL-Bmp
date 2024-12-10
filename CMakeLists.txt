@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(CL-Bmp VERSION 4.6.7)
+project(CL-Bmp VERSION 4.7.7)
 enable_testing()
 if(NOT TARGET ${PROJECT_NAME})
 
@@ -17,7 +17,7 @@ ae2fCL_CoreAppendInclude(
 include(GNUInstallDirs)
 ae2f_CoreLibTent(
     ${PROJECT_NAME} ${ae2f_PREFIX_LIB} 
-    include
+    include ae2fCL
     "include/ae2fCL/Bmp/Buff.h"
     "include/ae2fCL/Bmp/Dest.h"
     "include/ae2fCL/Bmp/Src.h"
@@ -26,7 +26,7 @@ ae2f_CoreLibTent(
     "src/Bmp.c"
 )
 
-target_link_libraries(${PROJECT_NAME} INTERFACE CL-Core)
+target_link_libraries(${PROJECT_NAME} PUBLIC CL-Core)
 target_link_libraries(${PROJECT_NAME} PUBLIC Bmp)
 
 ae2fCL_CoreAddConfProjTarDep(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src)

@@ -16,12 +16,12 @@ cl_int ae2fCL_cBmpBuffMk(
     cl_mem_flags flag,
     ae2f_struct ae2f_cBmpSrc* src,
     cl_context ctx
-);
+) noexcept;
 
 
 ae2f_extern ae2f_SHAREDCALL 
 cl_int ae2fCL_cBmpBuffDel(
     ae2f_struct ae2fCL_cBmpBuff* block
-);
+) noexcept;
 
 #endif
