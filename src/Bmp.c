@@ -119,7 +119,8 @@ ae2f_SHAREDEXPORT cl_int ae2fCL_BmpRectCpy(
 
     err = clEnqueueReadBuffer(
         queue, dest->body, CL_TRUE, 0,
-        workcount[0] * workcount[1] * workcount[2], dest->source->Addr, 1, &kev, 0
+        (dest->source->rIdxer.Count * dest->source->ElSize) >> 3, 
+        dest->source->Addr, 1, &kev, 0
     );
 
     return err;
