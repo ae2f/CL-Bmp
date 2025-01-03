@@ -1,16 +1,18 @@
 cmake_minimum_required(VERSION 3.10)
 project(CL-Bmp VERSION 4.7.17)
 enable_testing()
+include(cmake/CL-Core.cmake)
+
 if(NOT TARGET ${PROJECT_NAME})
 
-add_subdirectory(mod/ae2f/Bmp)
-add_subdirectory(mod/ae2fCL/Core)
+ae2f_CoreLibFetch(ae2f Bmp Rel-v6.16.16)
+ae2f_CoreLibFetch(ae2f CL-Core Rel-v4.5.13)
 
 ae2fCL_CoreAppendInclude(
-    ${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/include
-    ${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/mod/ae2f/mov2/include
-    ${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/mod/ae2f/mov2/mod/ae2f/mov/include
-    ${PROJECT_SOURCE_DIR}/mod/ae2f/Bmp/mod/ae2f/mov2/mod/ae2f/mov/mod/ae2f/Core/include
+    ${ae2f_ProjRoot}/submod/ae2f/Bmp/include
+    ${ae2f_ProjRoot}/submod/ae2f/mov2/include
+    ${ae2f_ProjRoot}/submod/ae2f/mov/include
+    ${ae2f_ProjRoot}/submod/ae2f/Core/include
 )
 
 ae2f_CoreLibTent(
