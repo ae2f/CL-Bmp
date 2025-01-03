@@ -5,8 +5,8 @@ include(cmake/CL-Core.cmake)
 
 if(NOT TARGET ${PROJECT_NAME})
 
-ae2f_CoreLibFetch(ae2f Bmp Rel-v6.16.16)
-ae2f_CoreLibFetch(ae2f CL-Core Rel-v4.5.13)
+ae2f_CoreLibFetch(ae2f Bmp Rel-v6.17.16)
+ae2f_CoreLibFetch(ae2f CL-Core Rel-v4.9.13)
 
 ae2fCL_CoreAppendInclude(
     ${ae2f_ProjRoot}/submod/ae2f/Bmp/include
