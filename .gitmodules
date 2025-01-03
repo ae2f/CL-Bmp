@@ -1,9 +1,0 @@
-[submodule "submodules/Bmp"]
-	path = submodules/Bmp
-	url = https://github.com/yuisanae2f/ae2f_Bmp
-[submodule "mod/ae2fCL/Core"]
-	path = mod/ae2fCL/Core
-	url = https://github.com/ae2f/CL-Core
-[submodule "mod/ae2f/Bmp"]
-	path = mod/ae2f/Bmp
-	url = https://github.com/ae2f/bmp
