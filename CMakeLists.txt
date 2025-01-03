@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(CL-Bmp VERSION 4.7.17)
+project(CL-Bmp VERSION 4.7.18)
 enable_testing()
 include(cmake/CL-Core.cmake)
 
