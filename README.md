@@ -1,5 +1,5 @@
 # ae2f::CL-Bmp
-- Rel-v4.7.19
+- Rel-v4.8.19
 > This project is not commenced yet.
 
 > It helps building the OpenCL kernel code version of `ae2f_Bmp`,
@@ -18,5 +18,4 @@
 - gcc
 - make
 - cmake
-- opencl
-- python
+- openCL

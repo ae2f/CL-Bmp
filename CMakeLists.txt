@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
-project(CL-Bmp VERSION 4.7.19)
+project(CL-Bmp VERSION 4.8.19)
 enable_testing()
-include(cmake/CL-Core.cmake)
+include(cmake/Core.cmake)
 
 if(NOT TARGET ${PROJECT_NAME})
 
-ae2f_CoreLibFetch(ae2f Bmp Rel-v6.17.16)
-ae2f_CoreLibFetch(ae2f CL-Core Rel-v4.9.13)
+ae2f_CoreLibFetch(ae2f Bmp Rel-v6.18.16)
+ae2f_CoreLibFetch(ae2f CL-Core Rel-v4.11.14)
 
 ae2fCL_CoreAppendInclude(
     ${ae2f_ProjRoot}/submod/ae2f/Bmp/include
